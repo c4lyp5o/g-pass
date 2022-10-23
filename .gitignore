@@ -33,7 +33,7 @@ yarn-error.log*
 /logs/*.log
 
 # local database
-/database/*.db
+/database/*
 
 # vercel
 .vercel
@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma migrations
+/prisma/migrations

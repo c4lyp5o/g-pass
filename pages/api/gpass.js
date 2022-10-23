@@ -6,10 +6,6 @@ import { conf } from '../../middleware/conf';
 
 const gpassAPI = nc().use(conf);
 
-gpassAPI.get(async (req, res) => {
-  res.status(200).json({ message: 'hi' });
-});
-
 gpassAPI.post(async (req, res) => {
   const prisma = new PrismaClient();
   const crypter = new crypt(process.env.SALT);

@@ -4,16 +4,26 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-
 model Pegawai {
   bil    Int     @id @default(autoincrement())
   nama  String  
   statusPegawai  String?
   gred String?
   mdcNumber String
+}
+model Juruterapi {
+  bil    Int     @id @default(autoincrement())
+  nama  String  
+  statusPegawai  String?
+  gred String?
+  mdtbNumber String?
+}
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  tempKey String?
 }
