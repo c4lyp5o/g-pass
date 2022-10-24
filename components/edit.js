@@ -1,15 +1,29 @@
-import { useState } from 'react';
-import { RiCloseLine } from 'react-icons/ri';
+import { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import axios from 'axios';
+import { RiCloseLine } from 'react-icons/ri';
+
+import Loading from './loading';
 
 import styles from '../styles/Modal.module.css';
 
-const Modal = ({ toggle, setOpenModal }) => {
-  const [nama, setNama] = useState('');
-  const [mdcNumber, setMdcNumber] = useState('');
-  const [mdtbNumber, setMdtbNumber] = useState('');
-  const [gred, setGred] = useState('');
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+const Modal = ({ toggle, setOpenEditModal, id }) => {
+  const { data, error } = useSWR(`/api/individu?id=${id}`, fetcher);
+  const [nama, setNama] = useState(null);
+  const [mdcNumber, setMdcNumber] = useState(null);
+  const [mdtbNumber, setMdtbNumber] = useState(null);
+  const [gred, setGred] = useState(null);
   const [addingData, setAddingData] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setNama(data[0].nama);
+      setGred(data[0].gred);
+      setMdcNumber(data[0].mdcNumber);
+    }
+  }, [data]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,32 +36,30 @@ const Modal = ({ toggle, setOpenModal }) => {
     if (toggle === 'pegawai') {
       Data = {
         ...Data,
-        mdcNumber: mdcNumber.toLowerCase(),
-        statusPegawai: 'pp',
+        mdcNumber: mdcNumber,
       };
     }
     if (toggle === 'juruterapi') {
       Data = {
         ...Data,
-        mdtbNumber: mdtbNumber.toLowerCase(),
-        statusPegawai: 'jp',
+        mdtbNumber: mdtbNumber,
       };
     }
     console.log(Data);
     try {
       const res = await axios.post('/api/gpass', {
-        query: 'create',
-        nama: Data.nama,
-        gred: Data.gred,
-        statusPegawai: Data.statusPegawai,
-        mdcNumber: Data.mdcNumber,
+        query: 'update',
+        updateNama: Data.nama,
+        updateGred: Data.gred,
+        updateMdcNumber: Data.mdcNumber,
+        forUpdating: id,
       });
       console.log(res);
     } catch (err) {
       console.log(err);
     }
     setAddingData(false);
-    setOpenModal(false);
+    setOpenEditModal(false);
   };
 
   function BusyButton() {
@@ -95,18 +107,24 @@ const Modal = ({ toggle, setOpenModal }) => {
     );
   }
 
+  if (!data) return <Loading />;
+  if (error) return <div>failed to load</div>;
+
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className={styles.darkBG} onClick={() => setOpenModal(false)} />
+        <div
+          className={styles.darkBG}
+          onClick={() => setOpenEditModal(false)}
+        />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
-              <h5 className={styles.heading}>TAMBAH {toggle}</h5>
+              <h5 className={styles.heading}>Ubah {toggle}</h5>
             </div>
             <span
               className={styles.closeBtn}
-              onClick={() => setOpenModal(false)}
+              onClick={() => setOpenEditModal(false)}
             >
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
@@ -210,7 +228,7 @@ const Modal = ({ toggle, setOpenModal }) => {
                 {addingData ? <BusyButton /> : <SubmitButtton />}
                 <span
                   className={styles.cancelBtn}
-                  onClick={() => setOpenModal(false)}
+                  onClick={() => setOpenEditModal(false)}
                 >
                   Cancel
                 </span>

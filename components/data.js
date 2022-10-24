@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 
+import AddModal from './add';
+import EditModal from './edit';
+import DeleteModal from './delete';
+
+import Loading from './loading';
+
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Data({ toggle }) {
-  const { data, error } = useSWR(`/api/${toggle}`, fetcher);
+  const { data, error } = useSWR(`/api/${toggle}`, fetcher, {
+    revalidateIfStale: true,
+  });
   const [philter, setPhilter] = useState('');
+  const [id, setId] = useState('');
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [deleteCandidate, setDeleteCandidate] = useState('');
 
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <Loading />;
   if (error) return <div>Error...</div>;
 
   return (
@@ -34,7 +47,7 @@ export default function Data({ toggle }) {
       <button
         type='button'
         className='px-6 py-2.5 m-1 w-52 bg-kaunter3 font-medium text-xs uppercase rounded-md shadow-md transition-all'
-        onClick={(e) => setShowForm(true)}
+        onClick={(e) => setOpenModal(true)}
       >
         Daftar {toggle} Baru
       </button>
@@ -101,18 +114,18 @@ export default function Data({ toggle }) {
                       <button
                         className='bg-admin3 relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2'
                         onClick={() => {
-                          setShowEditModal(true);
-                          setId(o._id);
+                          setOpenEditModal(true);
+                          setId(o.bil);
                         }}
                       >
                         Ubah
                       </button>
                       <button
                         className='bg-admin3 relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2'
-                        id={o._id}
+                        id={o.bil}
                         onClick={(e) => {
-                          setShowDeleteModal(true);
-                          setId(o._id);
+                          setOpenDeleteModal(true);
+                          setId(o.bil);
                           setDeleteCandidate(o.nama);
                         }}
                       >
@@ -125,6 +138,24 @@ export default function Data({ toggle }) {
           </table>
         </div>
       </div>
+      {openAddModal ? (
+        <AddModal toggle={toggle} setOpenAddModal={setOpenAddModal} />
+      ) : null}
+      {openEditModal ? (
+        <EditModal
+          toggle={toggle}
+          setOpenEditModal={setOpenEditModal}
+          id={id}
+        />
+      ) : null}
+      {openDeleteModal ? (
+        <DeleteModal
+          toggle={toggle}
+          setOpenDeleteModal={setOpenDeleteModal}
+          id={id}
+          deleteCandidate={deleteCandidate}
+        />
+      ) : null}
     </>
   );
 }

@@ -62,4 +62,4 @@ const conf = nc()
 //     }
 //   });
 
-export { conf };
+export { conf, logger };

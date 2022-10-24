@@ -58,25 +58,18 @@ gpassAPI.post(async (req, res) => {
       break;
     case 'update':
       console.log('update');
-      const {
-        forUpdating,
-        updateNama,
-        updateStatusPegawai,
-        updateGred,
-        updateMdcNumber,
-      } = req.body;
-      const dataUpdate = await prisma.pegawai.update({
+      const { forUpdating, updateNama, updateGred, updateMdcNumber } = req.body;
+      const updatedPegawai = await prisma.pegawai.update({
         where: {
           bil: forUpdating,
         },
         data: {
           nama: crypter.encrypt(updateNama),
-          statusPegawai: crypter.encrypt(updateStatusPegawai),
           gred: crypter.encrypt(updateGred),
           mdcNumber: crypter.encrypt(updateMdcNumber),
         },
       });
-      res.status(200).json(dataUpdate);
+      res.status(200).json(updatedPegawai);
       break;
     case 'delete':
       console.log('delete');
