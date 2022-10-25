@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import styles from '../styles/Modal.module.css';
 
-const Modal = ({ toggle, setOpenModal }) => {
+const Modal = ({ toggle, setOpenAddModal, mutate }) => {
   const [nama, setNama] = useState('');
   const [mdcNumber, setMdcNumber] = useState('');
   const [mdtbNumber, setMdtbNumber] = useState('');
@@ -47,7 +47,8 @@ const Modal = ({ toggle, setOpenModal }) => {
       console.log(err);
     }
     setAddingData(false);
-    setOpenModal(false);
+    setOpenAddModal(false);
+    mutate();
   };
 
   function BusyButton() {
@@ -98,7 +99,7 @@ const Modal = ({ toggle, setOpenModal }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className={styles.darkBG} onClick={() => setOpenModal(false)} />
+        <div className={styles.darkBG} onClick={() => setOpenAddModal(false)} />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
@@ -106,7 +107,7 @@ const Modal = ({ toggle, setOpenModal }) => {
             </div>
             <span
               className={styles.closeBtn}
-              onClick={() => setOpenModal(false)}
+              onClick={() => setOpenAddModal(false)}
             >
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
@@ -210,7 +211,7 @@ const Modal = ({ toggle, setOpenModal }) => {
                 {addingData ? <BusyButton /> : <SubmitButtton />}
                 <span
                   className={styles.cancelBtn}
-                  onClick={() => setOpenModal(false)}
+                  onClick={() => setOpenAddModal(false)}
                 >
                   Cancel
                 </span>

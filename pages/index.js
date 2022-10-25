@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 
 import Data from '../components/data';
+import Loading from '../components/loading';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -9,7 +10,7 @@ export default function Home() {
   const [toggle, setToggle] = useState(null);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (session) {

@@ -10,36 +10,25 @@ import Loading from './loading';
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Data({ toggle }) {
-  const { data, error } = useSWR(`/api/gpass?type=${toggle}`, fetcher, {
-    revalidateIfStale: true,
-  });
+  const { data, mutate, error } = useSWR(`/api/gpass?type=${toggle}`, fetcher);
   const [philter, setPhilter] = useState('');
-  const [id, setId] = useState('');
+  const [entity, setEntity] = useState({});
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [deleteCandidate, setDeleteCandidate] = useState('');
 
   if (!data) return <Loading />;
   if (error) return <div>Error...</div>;
 
   return (
     <>
-      <div className='grid grid-cols-1 lg:grid-cols-2'>
-        <p className='font-semibold text-user6 mt-2 ml-3 lg:mr-auto'>
-          Status Pegawai: {toggle}
-        </p>
-        <p className='font-semibold text-user6 lg:mt-2 mr-3 lg:ml-auto'>
-          Tarikh: {new Date().toLocaleDateString()}
-        </p>
-      </div>
       <div className='flex justify-center'>
         <div className='mb-3 xl:w-96'>
           <input
             type='search'
             className='outline outline-1 outline-userBlack rounded-md p-3'
-            id='carianPesakit'
-            placeholder='Cari pesakit...'
+            id='carianPegawai'
+            placeholder='Cari pegawai...'
             onChange={(e) => setPhilter(e.target.value.toLowerCase())}
           />
         </div>
@@ -47,7 +36,7 @@ export default function Data({ toggle }) {
       <button
         type='button'
         className='px-6 py-2.5 m-1 w-52 bg-kaunter3 font-medium text-xs uppercase rounded-md shadow-md transition-all'
-        onClick={(e) => setOpenModal(true)}
+        onClick={(e) => setOpenAddModal(true)}
       >
         Daftar {toggle} Baru
       </button>
@@ -115,18 +104,16 @@ export default function Data({ toggle }) {
                         className='bg-admin3 relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2'
                         onClick={() => {
                           setOpenEditModal(true);
-                          setId(o.bil);
+                          setEntity(o);
                         }}
                       >
                         Ubah
                       </button>
                       <button
                         className='bg-admin3 relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2'
-                        id={o.bil}
-                        onClick={(e) => {
+                        onClick={() => {
                           setOpenDeleteModal(true);
-                          setId(o.bil);
-                          setDeleteCandidate(o.nama);
+                          setEntity(o);
                         }}
                       >
                         Hapus
@@ -139,21 +126,26 @@ export default function Data({ toggle }) {
         </div>
       </div>
       {openAddModal ? (
-        <AddModal toggle={toggle} setOpenAddModal={setOpenAddModal} />
+        <AddModal
+          toggle={toggle}
+          setOpenAddModal={setOpenAddModal}
+          mutate={mutate}
+        />
       ) : null}
       {openEditModal ? (
         <EditModal
           toggle={toggle}
           setOpenEditModal={setOpenEditModal}
-          id={id}
+          entity={entity}
+          mutate={mutate}
         />
       ) : null}
       {openDeleteModal ? (
         <DeleteModal
           toggle={toggle}
           setOpenDeleteModal={setOpenDeleteModal}
-          id={id}
-          deleteCandidate={deleteCandidate}
+          entity={entity}
+          mutate={mutate}
         />
       ) : null}
     </>

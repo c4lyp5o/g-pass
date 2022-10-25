@@ -1,12 +1,14 @@
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 
+import Loading from './loading';
+
 export default function Header() {
   const { data: session, status } = useSession();
   const loading = status === 'loading';
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (session) {
@@ -45,6 +47,9 @@ export default function Header() {
                 </p>
                 <p className='w-96 text-sm pt-1'>
                   <b>Daerah: </b>
+                  <span className='uppercase'>
+                    {session.user.daerah ?? 'Tiada'}
+                  </span>
                 </p>
               </div>
               <button

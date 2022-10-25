@@ -9,8 +9,11 @@ import styles from '../styles/Modal.module.css';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-const Modal = ({ toggle, setOpenEditModal, id }) => {
-  const { data, error } = useSWR(`/api/gpass?type=individu&id=${id}`, fetcher);
+const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
+  const { data, error } = useSWR(
+    `/api/gpass?type=individu&id=${entity.bil}`,
+    fetcher
+  );
   const [nama, setNama] = useState('');
   const [mdcNumber, setMdcNumber] = useState('');
   const [mdtbNumber, setMdtbNumber] = useState('');
@@ -53,7 +56,7 @@ const Modal = ({ toggle, setOpenEditModal, id }) => {
         updateNama: Data.nama,
         updateGred: Data.gred,
         updateMdcNumber: Data.mdcNumber,
-        forUpdating: id,
+        forUpdating: data.bil,
       });
       console.log(res);
     } catch (err) {
@@ -61,6 +64,7 @@ const Modal = ({ toggle, setOpenEditModal, id }) => {
     }
     setAddingData(false);
     setOpenEditModal(false);
+    mutate();
   };
 
   function BusyButton() {

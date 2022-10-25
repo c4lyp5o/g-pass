@@ -4,7 +4,7 @@ import { RiCloseLine } from 'react-icons/ri';
 
 import styles from '../styles/Modal.module.css';
 
-const Modal = ({ setOpenDeleteModal, id, deleteCandidate }) => {
+const Modal = ({ setOpenDeleteModal, entity, mutate }) => {
   const [deletingData, setDeletingData] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -13,7 +13,7 @@ const Modal = ({ setOpenDeleteModal, id, deleteCandidate }) => {
     try {
       const res = await axios.post('/api/gpass', {
         query: 'delete',
-        forDeletion: id,
+        forDeletion: entity.bil,
       });
       console.log(res);
     } catch (err) {
@@ -21,6 +21,7 @@ const Modal = ({ setOpenDeleteModal, id, deleteCandidate }) => {
     }
     setDeletingData(false);
     setOpenDeleteModal(false);
+    mutate();
   };
 
   function BusyButton() {
@@ -87,7 +88,7 @@ const Modal = ({ setOpenDeleteModal, id, deleteCandidate }) => {
             <RiCloseLine style={{ marginBottom: '-3px' }} />
           </button>
           <div className={styles.modalContent}>
-            Anda YAKIN untuk menghapus {deleteCandidate}?
+            Anda YAKIN untuk menghapus {entity.nama}?
           </div>
           <div className={styles.modalActions}>
             <div className={styles.actionsContainer}>
