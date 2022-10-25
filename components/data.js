@@ -10,7 +10,7 @@ import Loading from './loading';
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Data({ toggle }) {
-  const { data, error } = useSWR(`/api/${toggle}`, fetcher, {
+  const { data, error } = useSWR(`/api/gpass?type=${toggle}`, fetcher, {
     revalidateIfStale: true,
   });
   const [philter, setPhilter] = useState('');

@@ -10,18 +10,19 @@ import styles from '../styles/Modal.module.css';
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 const Modal = ({ toggle, setOpenEditModal, id }) => {
-  const { data, error } = useSWR(`/api/individu?id=${id}`, fetcher);
-  const [nama, setNama] = useState(null);
-  const [mdcNumber, setMdcNumber] = useState(null);
-  const [mdtbNumber, setMdtbNumber] = useState(null);
-  const [gred, setGred] = useState(null);
-  const [addingData, setAddingData] = useState(false);
+  const { data, error } = useSWR(`/api/gpass?type=individu&id=${id}`, fetcher);
+  const [nama, setNama] = useState('');
+  const [mdcNumber, setMdcNumber] = useState('');
+  const [mdtbNumber, setMdtbNumber] = useState('');
+  const [gred, setGred] = useState('');
+  const [addingData, setAddingData] = useState('');
 
   useEffect(() => {
     if (data) {
-      setNama(data[0].nama);
-      setGred(data[0].gred);
-      setMdcNumber(data[0].mdcNumber);
+      console.log(data);
+      setNama(data.nama);
+      setGred(data.gred);
+      setMdcNumber(data.mdcNumber);
     }
   }, [data]);
 
