@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import crypt from 'simple-crypto-js';
+// import crypt from 'simple-crypto-js';
 
 export default async function handler(req, res) {
   const prisma = new PrismaClient();
-  const crypter = new crypt(process.env.SALT);
+  // const crypter = new crypt(process.env.SALT);
   const response = await fetch('https://erkm.calypsocloud.one/pegawai', {
     method: 'GET',
     headers: {
@@ -15,13 +15,13 @@ export default async function handler(req, res) {
   data.forEach(async (item) => {
     const pegawai = await prisma.pegawai.create({
       data: {
-        nama: crypter.encrypt(item.nama),
-        statusPegawai: crypter.encrypt(item.statusPegawai),
-        gred: crypter.encrypt(item.gred),
-        mdcNumber: crypter.encrypt(item.mdcNumber),
+        nama: item.nama,
+        statusPegawai: item.statusPegawai,
+        gred: item.gred,
+        mdcNumber: item.mdcNumber,
       },
     });
-    console.log(pegawai);
+    // console.log(pegawai);
   });
   res.status(200).json({ message: 'done' });
 }

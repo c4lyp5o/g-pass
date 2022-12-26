@@ -1,107 +1,88 @@
-import { useState, useEffect } from 'react';
-import useSWR from 'swr';
-import axios from 'axios';
+import { useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
-
-import Loading from './loading';
+import axios from 'axios';
 
 import { Human, NonHuman } from './inputs';
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
 
-async function fetcher(url) {
-  const res = await fetch(url);
-  return res.json();
-}
-
-const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
-  const { data, error } = useSWR(
-    `/api/gpass?type=individu&from=${toggle}&id=${entity.bil}`,
-    fetcher
-  );
+const Modal = ({ toggle, setOpenAddModal, mutate }) => {
+  const [nama, setNama] = useState('');
+  const [mdcNumber, setMdcNumber] = useState('');
+  const [mdtbNumber, setMdtbNumber] = useState('');
 
   const [slate, setSlate] = useState({});
-  const [editingData, setEditingData] = useState('');
-
-  useEffect(() => {
-    if (data) {
-      setSlate(data);
-    }
-  }, [data]);
+  const [addingData, setAddingData] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setEditingData(true);
+    setAddingData(true);
     let Data = {};
     Data = {
-      updateNama: slate.nama,
-      type: toggle,
-      bil: entity.bil,
+      nama: slate.nama.toLowerCase(),
     };
     if (toggle === 'pegawai') {
       Data = {
         ...Data,
-        updateMdcNumber: slate.mdcNumber,
+        mdcNumber: slate.mdcNumber.toLowerCase(),
+        statusPegawai: 'pp',
       };
     }
     if (toggle === 'juruterapi') {
       Data = {
         ...Data,
-        updateMdtbNumber: slate.mdtbNumber,
+        mdtbNumber: slate.mdtbNumber.toLowerCase(),
+        statusPegawai: 'jp',
       };
     }
     if (toggle === 'fasiliti') {
       Data = {
         ...Data,
-        updateDaerah: slate.daerah.toLowerCase(),
-        updateNegeri: slate.negeri.toLowerCase(),
-        updateKodFasiliti: slate.kodFasiliti.toLowerCase(),
-        updatekodFasilitiGiret: slate.kodFasilitiGiret.toLowerCase(),
+        daerah: slate.daerah.toLowerCase(),
+        negeri: slate.negeri.toLowerCase(),
+        kodFasiliti: slate.kodFasiliti.toLowerCase(),
+        kodFasilitiGiret: slate.kodFasilitiGiret.toLowerCase(),
+        statusPegawai: 'fs',
       };
     }
     console.log(Data);
     try {
       const res = await axios.post('/api/gpass', {
-        query: 'update',
+        query: 'create',
         payload: Data,
       });
       console.log(res);
     } catch (err) {
       console.log(err);
     }
-    setEditingData(false);
-    setOpenEditModal(false);
+    setAddingData(false);
+    setOpenAddModal(false);
     mutate();
   };
 
   const InputProps = {
-    setSlate,
     slate,
+    setSlate,
+    toggle,
   };
-
-  if (!data) return <Loading />;
-  if (error) return <div>failed to load</div>;
 
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div
-          className={styles.darkBG}
-          onClick={() => setOpenEditModal(false)}
-        />
+        <div className={styles.darkBG} onClick={() => setOpenAddModal(false)} />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
-              <h5 className={styles.heading}>Ubah {toggle}</h5>
+              <h5 className={styles.heading}>TAMBAH {toggle}</h5>
             </div>
             <span
               className={styles.closeBtn}
-              onClick={() => setOpenEditModal(false)}
+              onClick={() => setOpenAddModal(false)}
             >
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
             <div className={styles.modalContent}>
-              {toggle !== 'fasiliti' ? (
+              {toggle !== 'fs' ? (
                 <Human {...InputProps} />
               ) : (
                 <NonHuman {...InputProps} />
@@ -109,10 +90,10 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
             </div>
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
-                {editingData ? <BusyButton /> : <SubmitButton func='edit' />}
+                {addingData ? <BusyButton /> : <SubmitButton />}
                 <span
                   className={styles.cancelBtn}
-                  onClick={() => setOpenEditModal(false)}
+                  onClick={() => setOpenAddModal(false)}
                 >
                   Cancel
                 </span>

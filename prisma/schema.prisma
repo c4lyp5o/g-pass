@@ -11,16 +11,22 @@ datasource db {
 model Pegawai {
   bil    Int     @id @default(autoincrement())
   nama  String  
-  statusPegawai  String?
-  gred String?
-  mdcNumber String
+  statusPegawai  String
+  mdcNumber Int
 }
 model Juruterapi {
   bil    Int     @id @default(autoincrement())
   nama  String  
-  statusPegawai  String?
-  gred String?
-  mdtbNumber String?
+  statusPegawai  String
+  mdtbNumber String
+}
+model Fasiliti {
+  bil    Int     @id @default(autoincrement())
+  nama  String  
+  negeri  String
+  daerah  String
+  kodFasiliti  String
+  kodFasilitiGiret  String
 }
 model Account {
   id                 String  @id @default(cuid())
@@ -40,7 +46,6 @@ model Account {
 
   @@unique([provider, providerAccountId])
 }
-
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -48,19 +53,17 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-
 model User {
   id            String    @id @default(cuid())
   name          String?
-  daerah        String?
-  negeri        String?
+  username      String?   @unique
+  password      String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
 }
-
 model VerificationToken {
   identifier String
   token      String   @unique

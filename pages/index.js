@@ -13,43 +13,39 @@ export default function Home() {
     return <Loading />;
   }
 
+  if (!session) return signIn();
+
   if (session) {
     return (
-      <div>
-        <div>
-          Menu Utama
-          <div className='grid grid-cols-2'>
-            <div>
-              <button
-                className='capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-admin1 transition-all'
-                onClick={() => setToggle('pegawai')}
-              >
-                PEGAWAI PERGIGIAN
-              </button>
-            </div>
-            <div>
-              <button
-                className='capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-admin1 transition-all'
-                onClick={() => setToggle('juruterapi')}
-              >
-                JURUTERAPI PERGIGIAN
-              </button>
-            </div>
-          </div>
-          {toggle ? <Data toggle={toggle} /> : null}
+      <div className='mx-auto w-1/2 h-1/2 flex flex-col justify-center items-center mt-2'>
+        <h2 className='font-mono p-5'>Menu Utama</h2>
+        <div className='grid grid-cols-3 gap-2'>
+          <button
+            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all
+            ${toggle === 'pegawai' ? 'bg-yellow-300 hover:bg-yellow-200' : ''}
+          `}
+            onClick={() => setToggle('pegawai')}
+          >
+            PEGAWAI PERGIGIAN
+          </button>
+          <button
+            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
+              toggle === 'juruterapi' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
+            }`}
+            onClick={() => setToggle('juruterapi')}
+          >
+            JURUTERAPI PERGIGIAN
+          </button>
+          <button
+            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
+              toggle === 'fasiliti' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
+            }`}
+            onClick={() => setToggle('fasiliti')}
+          >
+            KLINIK PERGIGIAN
+          </button>
         </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className='mx-auto w-1/2 h-1/2 flex flex-col justify-center items-center'>
-        Sila log masuk <br />
-        <button
-          className='capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-admin1 transition-all'
-          onClick={() => signIn()}
-        >
-          log masuk
-        </button>
+        {toggle ? <Data toggle={toggle} /> : null}
       </div>
     );
   }

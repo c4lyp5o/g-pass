@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import EmailProvider from 'next-auth/providers/email';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 
 import { PrismaClient } from '@prisma/client';
@@ -29,7 +30,48 @@ const options = {
       },
       from: process.env.SMTP_FROM,
     }),
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        username: {
+          label: 'Username',
+          type: 'text',
+          placeholder: 'Your username',
+        },
+        password: { label: 'Password', type: 'password' },
+      },
+      authorize: async (credentials) => {
+        const user = await prisma.user.findUnique({
+          where: {
+            username: credentials.username,
+          },
+        });
+
+        if (user && user.password === credentials.password) {
+          return user;
+        }
+
+        return null;
+      },
+    }),
   ],
   adapter: PrismaAdapter(prisma),
   secret: process.env.SECRET,
+  session: {
+    strategy: 'jwt',
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+  },
+  // pages: {
+  //   signIn: '/auth/signin',
+  // },
+  // callbacks: {
+  //   async jwt(token, user, account, profile, isNewUser) {
+  //     if (user) {
+  //       token.id = user.id;
+  //     }
+  //     return token;
+  //   },
+  // },
 };

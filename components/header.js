@@ -42,13 +42,7 @@ export default function Header() {
                 <p className='w-96 text-sm leading-3'>
                   <b>Pengguna: </b>
                   <span className='uppercase'>
-                    {session.user.email ?? session.user.name}
-                  </span>
-                </p>
-                <p className='w-96 text-sm pt-1'>
-                  <b>Daerah: </b>
-                  <span className='uppercase'>
-                    {session.user.daerah ?? 'Tiada'}
+                    {session.user.name ?? session.user.email}
                   </span>
                 </p>
               </div>
