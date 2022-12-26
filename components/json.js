@@ -55,7 +55,7 @@ const AddJson = ({ toggle, setAddJson }) => {
                 <input
                   className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none'
                   type='file'
-                  id='excelFile'
+                  id='jsonFile'
                 />
                 <button
                   className={`flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-5 ${
@@ -66,7 +66,7 @@ const AddJson = ({ toggle, setAddJson }) => {
                   {addingData ? 'Sabar...' : 'Upload'}
                 </button>
                 <p className='text-red-500 text-xs italic mt-5'>
-                  {addingData ? 'Memproses...' : 'Pilih File Excel'}
+                  {addingData ? 'Memproses...' : 'Pilih File JSON'}
                 </p>
                 {success && (
                   <p className='text-green-500 text-xs italic'>
@@ -77,7 +77,7 @@ const AddJson = ({ toggle, setAddJson }) => {
             </div>
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
-                {addingData ? <BusyButton /> : <SubmitButton />}
+                {addingData ? <BusyButton /> : <SubmitButton func='add' />}
                 <span
                   className='capitalize bg-red-400 rounded-md shadow-xl p-2 hover:bg-red-600 transition-all'
                   onClick={() => setAddJson(false)}

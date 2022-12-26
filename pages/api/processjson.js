@@ -17,13 +17,15 @@ export default async function handler(req, res) {
   const prisma = new PrismaClient();
 
   upload(req, res, async (err) => {
+    console.log('processing json');
     if (err) {
       res.status(500).json({ error: err });
     } else {
       const { toggle } = req.body;
+      let count = 0;
       switch (toggle) {
         case 'juruterapi':
-          console.log('juruterapi');
+          console.log('juruterapi json process');
           await prisma.juruterapi.deleteMany({});
           const punyaJp = fs.readFileSync(
             `./public/uploads/${req.file.originalname}`,
@@ -34,6 +36,7 @@ export default async function handler(req, res) {
             if (!row.mdtbNumber) {
               return res.status(400).json({ msg: 'mdtbNumber is required' });
             }
+            count++;
             await prisma.juruterapi.create({
               data: {
                 nama: row.nama,
@@ -55,6 +58,7 @@ export default async function handler(req, res) {
             if (!row.mdcNumber) {
               return res.status(400).json({ msg: 'mdcNumber is required' });
             }
+            count++;
             await prisma.pegawai.create({
               data: {
                 nama: row.nama,
@@ -78,6 +82,7 @@ export default async function handler(req, res) {
                 .status(400)
                 .json({ msg: 'kodFasiliti and kodFasilitiGiret is required' });
             }
+            count++;
             await prisma.fasiliti.create({
               data: {
                 nama: row.nama,
@@ -91,7 +96,7 @@ export default async function handler(req, res) {
           }
           break;
         default:
-          res.status(404).json({ message: 'Not Found' });
+          res.status(404).json({ added: count });
           break;
       }
       res.status(200).json({ message: 'done' });

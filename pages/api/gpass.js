@@ -8,7 +8,6 @@ const gpassAPI = nc().use(conf);
 gpassAPI.get(async (req, res) => {
   const prisma = new PrismaClient();
   const { type, page } = req.query;
-  console.log(type, page);
   let x;
   switch (type) {
     case 'pegawai':
@@ -147,16 +146,6 @@ gpassAPI.post(async (req, res) => {
       let read;
       if (statusPegawai === 'pp') {
         read = await prisma.pegawai.findMany();
-        // let decryptedData = [];
-        // dataPegawai.forEach((item) => {
-        //   decryptedData.push({
-        //     bil: item.bil,
-        //     nama: crypter.decrypt(item.nama),
-        //     statusPegawai: crypter.decrypt(item.statusPegawai),
-        //     gred: crypter.decrypt(item.gred),
-        //     mdcNumber: crypter.decrypt(item.mdcNumber),
-        //   });
-        // });
       }
       if (statusPegawai === 'jp') {
         read = await prisma.juruterapi.findMany();
@@ -202,7 +191,6 @@ gpassAPI.post(async (req, res) => {
       break;
     case 'update':
       console.log('update');
-      console.log(payload);
       var {
         type,
         bil,

@@ -84,7 +84,7 @@ const AddExcel = ({ toggle, setAddExcel }) => {
             </div>
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
-                {addingData ? <BusyButton /> : <SubmitButton />}
+                {addingData ? <BusyButton /> : <SubmitButton func='add' />}
                 <span
                   className='capitalize bg-red-400 rounded-md shadow-xl p-2 hover:bg-red-600 transition-all'
                   onClick={() => setAddExcel(false)}
