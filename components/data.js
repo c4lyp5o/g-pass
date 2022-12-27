@@ -31,6 +31,20 @@ export default function Data({ toggle }) {
     fetcher
   );
 
+  const getJSON = async () => {
+    const res = await fetch(`/api/gpass?type=download&from=${toggle}`);
+    const blob = await res.blob();
+    console.log(blob);
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href;
+    a.download = `${toggle}.json`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   const props = {
     mutate,
     entity,
@@ -73,10 +87,22 @@ export default function Data({ toggle }) {
               Tambah Dengan Excel
             </button>
             <button
-              className='bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded'
+              className='bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded mr-2'
               onClick={(e) => setAddJson(true)}
             >
               Tambah Dengan JSON
+            </button>
+            <button
+              className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded mr-2'
+              // onClick={(e) => setAddJson(true)}
+            >
+              Download Excel
+            </button>
+            <button
+              className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded'
+              onClick={(e) => getJSON()}
+            >
+              Download JSON
             </button>
           </div>
         </div>
@@ -89,7 +115,7 @@ export default function Data({ toggle }) {
         Daftar {toggle} Baru
       </button>
       <div className='items-center justify-center'>
-        <div className='m-auto overflow-x-auto text-xs rounded-md h-min max-w-max p-2'>
+        <div className='m-auto overflow-x-auto text-xs rounded-md h-min max-w-max p-1'>
           <table className='table-auto'>
             <thead className='bg-green-600'>
               <tr>
@@ -203,7 +229,19 @@ export default function Data({ toggle }) {
           </table>
         </div>
         <div className='mx-auto flex justify-center items-center mt-2'>
-          <div className='grid grid-cols-2 gap-5'>
+          <div className='grid grid-cols-4 gap-5'>
+            <button
+              className={`relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2 ${
+                page === 1 ? 'bg-slate-700 cursor-not-allowed' : 'bg-green-400'
+              }`}
+              onClick={() => {
+                if (page > 1) {
+                  setPage(1);
+                }
+              }}
+            >
+              {'<<'}
+            </button>
             <button
               className={`relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2 ${
                 page === 1 ? 'bg-slate-700 cursor-not-allowed' : 'bg-green-400'
@@ -229,6 +267,16 @@ export default function Data({ toggle }) {
               }}
             >
               Next
+            </button>
+            <button
+              className={`relative top-0 right-0 p-1 w-20 rounded-md text-white shadow-xl m-2 ${
+                page === data.pages
+                  ? 'bg-slate-700 cursor-not-allowed'
+                  : 'bg-green-400'
+              }`}
+              onClick={() => setPage(data.pages)}
+            >
+              {'>>'}
             </button>
           </div>
         </div>

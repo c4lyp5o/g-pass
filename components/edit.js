@@ -5,6 +5,7 @@ import { RiCloseLine } from 'react-icons/ri';
 
 import Loading from './loading';
 
+import { toast } from 'react-toastify';
 import { Human, NonHuman } from './inputs';
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
@@ -65,8 +66,10 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
         query: 'update',
         payload: Data,
       });
+      toast.success('Data berjaya dikemaskini');
       console.log(res);
     } catch (err) {
+      toast.error('Data gagal dikemaskini');
       console.log(err);
     }
     setEditingData(false);

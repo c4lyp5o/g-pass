@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import axios from 'axios';
 
+import { toast } from 'react-toastify';
 import { Human, NonHuman } from './inputs';
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
@@ -47,8 +48,10 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
         query: 'create',
         payload: Data,
       });
+      toast.success('Data berjaya ditambah');
       console.log(res);
     } catch (err) {
+      toast.error('Data gagal ditambah');
       console.log(err);
     }
     setAddingData(false);

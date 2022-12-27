@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { RiCloseLine } from 'react-icons/ri';
 
+import { toast } from 'react-toastify';
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
 
@@ -16,8 +17,10 @@ const Modal = ({ setOpenDeleteModal, toggle, entity, mutate }) => {
         query: 'delete',
         payload: { type: toggle, bil: entity.bil },
       });
+      toast.success('Data berjaya dihapus');
       console.log(res);
     } catch (err) {
+      toast.error('Data gagal dihapus');
       console.log(err);
     }
     setDeletingData(false);

@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
+import { toast } from 'react-toastify';
 
 const AddExcel = ({ toggle, setAddExcel }) => {
   const [addingData, setAddingData] = useState(false);
@@ -14,6 +15,7 @@ const AddExcel = ({ toggle, setAddExcel }) => {
     e.preventDefault();
     setAddingData(true);
     if (e.target.excelFile.value === '') {
+      toast.error('Sila pilih fail');
       return;
     }
     if (
@@ -21,6 +23,7 @@ const AddExcel = ({ toggle, setAddExcel }) => {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
       e.target.excelFile.files[0].type !== 'application/vnd.ms-excel'
     ) {
+      toast.error('Fail bukan xlsx atau xls');
       return;
     }
     const excelFile = e.target.excelFile.files[0];
@@ -28,12 +31,18 @@ const AddExcel = ({ toggle, setAddExcel }) => {
     formData.append('excelFile', excelFile);
     formData.append('toggle', toggle);
     try {
-      const response = await axios.post('/api/processxlsx', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log(response);
+      const response = await toast.promise(
+        axios.post('/api/processxlsx', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }),
+        {
+          loading: 'Memproses...',
+          success: `Berjaya menambah ${response.data.added} data!`,
+          error: 'Gagal!',
+        }
+      );
       setCount(parseInt(response.data.added));
       setSuccess(true);
     } catch (error) {
@@ -45,7 +54,17 @@ const AddExcel = ({ toggle, setAddExcel }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className={styles.darkBG} onClick={() => setAddExcel(false)} />
+        <div
+          className={styles.darkBG}
+          onClick={() => {
+            if (addingData) {
+              toast('No going back now!');
+              return;
+            } else {
+              setAddExcel(false);
+            }
+          }}
+        />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
@@ -53,7 +72,14 @@ const AddExcel = ({ toggle, setAddExcel }) => {
             </div>
             <span
               className={styles.closeBtn}
-              onClick={() => setAddExcel(false)}
+              onClick={() => {
+                if (addingData) {
+                  toast('No going back now!');
+                  return;
+                } else {
+                  setAddExcel(false);
+                }
+              }}
             >
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
@@ -65,9 +91,8 @@ const AddExcel = ({ toggle, setAddExcel }) => {
                   id='excelFile'
                 />
                 <button
-                  className={`flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-5 ${
-                    addingData ? 'disabled' : ''
-                  }`}
+                  className='flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-5'
+                  disabled={`${addingData ? true : false}`}
                   type='submit'
                 >
                   {addingData ? 'Sabar...' : 'Upload'}
@@ -77,7 +102,9 @@ const AddExcel = ({ toggle, setAddExcel }) => {
                 </p>
                 {success && (
                   <p className='text-green-500 text-xs italic'>
-                    Sebanyak {count} data berhasil ditambah
+                    {count > 0
+                      ? `Sebanyak ${count} data berhasil ditambah`
+                      : null}
                   </p>
                 )}
               </div>
@@ -85,12 +112,19 @@ const AddExcel = ({ toggle, setAddExcel }) => {
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
                 {addingData ? <BusyButton /> : <SubmitButton func='add' />}
-                <span
+                <button
                   className='capitalize bg-red-400 rounded-md shadow-xl p-2 hover:bg-red-600 transition-all'
-                  onClick={() => setAddExcel(false)}
+                  onClick={() => {
+                    if (addingData) {
+                      toast('No going back now!');
+                      return;
+                    } else {
+                      setAddExcel(false);
+                    }
+                  }}
                 >
-                  Cancel
-                </span>
+                  {addingData ? 'Please Wait...' : 'Cancel'}
+                </button>
               </div>
             </div>
           </div>

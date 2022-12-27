@@ -4,7 +4,7 @@ export function BusyButton() {
       <button
         type='button'
         className='inline-flex items-center text-center justify-center px-4 py-2 bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ease-in-out duration-150 cursor-not-allowed'
-        disabled=''
+        disabled
       >
         <svg
           className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'

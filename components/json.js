@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { BusyButton, SubmitButton } from './buttons';
 import styles from '../styles/Modal.module.css';
+import { toast } from 'react-toastify';
 
 const AddJson = ({ toggle, setAddJson }) => {
   const [addingData, setAddingData] = useState(false);
@@ -14,9 +15,11 @@ const AddJson = ({ toggle, setAddJson }) => {
     e.preventDefault();
     setAddingData(true);
     if (e.target.jsonFile.value === '') {
+      toast.error('Sila pilih fail');
       return;
     }
     if (e.target.jsonFile.files[0].type !== 'application/json') {
+      toast.error('Fail bukan JSON');
       return;
     }
     const jsonFile = e.target.jsonFile.files[0];
@@ -24,12 +27,18 @@ const AddJson = ({ toggle, setAddJson }) => {
     formData.append('jsonFile', jsonFile);
     formData.append('toggle', toggle);
     try {
-      const response = await axios.post('/api/processjson', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log(response);
+      const response = await toast.promise(
+        axios.post('/api/processjson', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }),
+        {
+          loading: 'Memproses...',
+          success: `Berjaya menambah ${response.data.added} data!`,
+          error: 'Gagal!',
+        }
+      );
       setCount(parseInt(response.data.added));
       setSuccess(true);
     } catch (error) {
@@ -41,15 +50,35 @@ const AddJson = ({ toggle, setAddJson }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className={styles.darkBG} onClick={() => setAddJson(false)} />
+        <div
+          className={styles.darkBG}
+          onClick={() => {
+            if (addingData) {
+              toast('No going back now!');
+              return;
+            } else {
+              setAddJson(false);
+            }
+          }}
+        />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
               <h5 className={styles.heading}>TAMBAH DATA MENGGUNAKAN JSON</h5>
             </div>
-            <span className={styles.closeBtn} onClick={() => setAddJson(false)}>
+            <button
+              className={styles.closeBtn}
+              onClick={() => {
+                if (addingData) {
+                  toast('No going back now!');
+                  return;
+                } else {
+                  setAddJson(false);
+                }
+              }}
+            >
               <RiCloseLine style={{ marginBottom: '-3px' }} />
-            </span>
+            </button>
             <div className={styles.modalContent}>
               <div className='mx-auto w-1/2 h-1/2 justify-center items-center mt-2'>
                 <input
@@ -61,6 +90,7 @@ const AddJson = ({ toggle, setAddJson }) => {
                   className={`flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-5 ${
                     addingData ? 'disabled' : ''
                   }`}
+                  disabled={`${addingData ? true : false}`}
                   type='submit'
                 >
                   {addingData ? 'Sabar...' : 'Upload'}
@@ -70,7 +100,9 @@ const AddJson = ({ toggle, setAddJson }) => {
                 </p>
                 {success && (
                   <p className='text-green-500 text-xs italic'>
-                    Sebanyak {count} data berhasil ditambah
+                    {count > 0
+                      ? `Sebanyak ${count} data berhasil ditambah`
+                      : null}
                   </p>
                 )}
               </div>
@@ -78,12 +110,18 @@ const AddJson = ({ toggle, setAddJson }) => {
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
                 {addingData ? <BusyButton /> : <SubmitButton func='add' />}
-                <span
+                <button
                   className='capitalize bg-red-400 rounded-md shadow-xl p-2 hover:bg-red-600 transition-all'
-                  onClick={() => setAddJson(false)}
+                  onClick={() => {
+                    if (addingData) {
+                      return toast('No going back now!');
+                    } else {
+                      setAddJson(false);
+                    }
+                  }}
                 >
-                  Cancel
-                </span>
+                  {addingData ? 'Please Wait...' : 'Cancel'}
+                </button>
               </div>
             </div>
           </div>

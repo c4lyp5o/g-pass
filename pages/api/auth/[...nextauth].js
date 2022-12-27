@@ -15,10 +15,10 @@ export default authHandler;
 const options = {
   site: process.env.NEXTAUTH_URL,
   providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
+    // GithubProvider({
+    //   clientId: process.env.GITHUB_ID,
+    //   clientSecret: process.env.GITHUB_SECRET,
+    // }),
     EmailProvider({
       server: {
         host: process.env.SMTP_HOST,
@@ -30,30 +30,30 @@ const options = {
       },
       from: process.env.SMTP_FROM,
     }),
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: {
-          label: 'Username',
-          type: 'text',
-          placeholder: 'Your username',
-        },
-        password: { label: 'Password', type: 'password' },
-      },
-      authorize: async (credentials) => {
-        const user = await prisma.user.findUnique({
-          where: {
-            username: credentials.username,
-          },
-        });
+    // CredentialsProvider({
+    //   name: 'Credentials',
+    //   credentials: {
+    //     username: {
+    //       label: 'Username',
+    //       type: 'text',
+    //       placeholder: 'Your username',
+    //     },
+    //     password: { label: 'Password', type: 'password' },
+    //   },
+    //   authorize: async (credentials) => {
+    //     const user = await prisma.user.findUnique({
+    //       where: {
+    //         username: credentials.username,
+    //       },
+    //     });
 
-        if (user && user.password === credentials.password) {
-          return user;
-        }
+    //     if (user && user.password === credentials.password) {
+    //       return user;
+    //     }
 
-        return null;
-      },
-    }),
+    //     return null;
+    //   },
+    // }),
   ],
   adapter: PrismaAdapter(prisma),
   secret: process.env.SECRET,

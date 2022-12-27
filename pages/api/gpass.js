@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import nc from 'next-connect';
+import fs from 'fs';
+import path from 'path';
 
 import { conf } from '../../middleware/conf';
 
@@ -54,7 +56,7 @@ gpassAPI.get(async (req, res) => {
       }
       break;
     case 'individu':
-      const { from, id } = req.query;
+      var { from, id } = req.query;
       switch (from) {
         case 'pegawai':
           const data1Pegawai = await prisma.pegawai.findUnique({
@@ -79,6 +81,55 @@ gpassAPI.get(async (req, res) => {
             },
           });
           res.status(200).json(data1Fasiliti);
+          break;
+        default:
+          res.status(404).json({ message: 'Not Found' });
+          break;
+      }
+      break;
+    case 'download':
+      console.log('download');
+      var { from } = req.query;
+      switch (from) {
+        case 'pegawai':
+          const dataPegawai = await prisma.pegawai.findMany();
+          const pegawaiJSON = JSON.stringify(dataPegawai);
+          fs.writeFileSync(
+            path.join(process.cwd(), 'public', 'data', 'pegawai.json'),
+            pegawaiJSON
+          );
+          const ppjson = fs.readFileSync(
+            process.cwd(),
+            'public',
+            'data',
+            'pegawai.json'
+          );
+          res.status(200).send(ppjson);
+          break;
+        case 'juruterapi':
+          console.log('dl juruterapi');
+          const dataJuruterapi = await prisma.juruterapi.findMany();
+          const juruterapiJSON = JSON.stringify(dataJuruterapi);
+          fs.writeFileSync(
+            path.join(process.cwd(), 'public', 'juruterapi.json'),
+            juruterapiJSON
+          );
+          const jpjson = fs.readFileSync(
+            path.join(process.cwd(), 'public', 'juruterapi.json')
+          );
+          res.setHeader('Content-Type', 'application/json');
+          res.status(200).send(jpjson);
+          break;
+        case 'fasiliti':
+          const dataFasiliti = await prisma.fasiliti.findMany();
+          const fasilitiJSON = JSON.stringify(dataFasiliti);
+          fs.writeFileSync(
+            path.join(process.cwd(), 'public', 'data', 'fasiliti.json'),
+            fasilitiJSON
+          );
+          res
+            .status(200)
+            .send(path.join(process.cwd(), 'public', 'data', 'fasiliti.json'));
           break;
         default:
           res.status(404).json({ message: 'Not Found' });

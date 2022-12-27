@@ -75,8 +75,8 @@ export default async function handler(req, res) {
             `./public/uploads/${req.file.originalname}`,
             'utf8'
           );
-          const ftData = JSON.parse(punyaFs);
-          for (let row of ftData) {
+          const fsData = JSON.parse(punyaFs);
+          for (let row of fsData) {
             if (!row.kodFasiliti || !row.kodFasilitiGiret) {
               return res
                 .status(400)
