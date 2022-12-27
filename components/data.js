@@ -234,22 +234,8 @@ export default function Data({ toggle }) {
         </div>
       </div>
       {openAddModal ? <AddModal {...props} /> : null}
-      {openEditModal ? (
-        <EditModal
-          toggle={toggle}
-          setOpenEditModal={setOpenEditModal}
-          entity={entity}
-          mutate={mutate}
-        />
-      ) : null}
-      {openDeleteModal ? (
-        <DeleteModal
-          toggle={toggle}
-          setOpenDeleteModal={setOpenDeleteModal}
-          entity={entity}
-          mutate={mutate}
-        />
-      ) : null}
+      {openEditModal ? <EditModal {...props} /> : null}
+      {openDeleteModal ? <DeleteModal {...props} /> : null}
       {addExcel ? <AddExcel {...props} /> : null}
       {addJson ? <AddJson {...props} /> : null}
     </>

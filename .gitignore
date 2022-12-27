@@ -32,9 +32,6 @@ yarn-error.log*
 # Log files
 /logs/*.log
 
-# local database
-/database/*
-
 # vercel
 .vercel
 
@@ -45,4 +42,6 @@ next-env.d.ts
 # prisma migrations
 /prisma/migrations
 
+# local stuff
+/database/*
 /public/uploads/*

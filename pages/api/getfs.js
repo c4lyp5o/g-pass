@@ -5,6 +5,14 @@ const prisma = new PrismaClient();
 export default async function handler(req, res) {
   const { negeri, daerah } = req.query;
 
+  if (!negeri && !daerah) {
+    return res.status(200).json([]);
+  }
+
+  if (!negeri && daerah) {
+    return res.status(200).json([]);
+  }
+
   if (negeri && !daerah) {
     return res.status(200).json([]);
   }
@@ -21,7 +29,7 @@ export default async function handler(req, res) {
   });
 
   if (!results) {
-    return res.status(404).json({ msg: 'No results found' });
+    return res.status(200).json([]);
   }
 
   res.status(200).json(results);
