@@ -53,10 +53,10 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
     if (toggle === 'fasiliti') {
       Data = {
         ...Data,
-        updateDaerah: slate.daerah.toLowerCase(),
-        updateNegeri: slate.negeri.toLowerCase(),
-        updateKodFasiliti: slate.kodFasiliti.toLowerCase(),
-        updatekodFasilitiGiret: slate.kodFasilitiGiret.toLowerCase(),
+        updateDaerah: slate.daerah,
+        updateNegeri: slate.negeri,
+        updateKodFasiliti: slate.kodFasiliti,
+        updatekodFasilitiGiret: slate.kodFasilitiGiret,
       };
     }
     console.log(Data);

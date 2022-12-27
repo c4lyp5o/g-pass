@@ -16,29 +16,29 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
     let Data = {};
     Data = {
       type: toggle,
-      nama: slate.nama.toLowerCase(),
+      nama: slate.nama,
     };
     if (toggle === 'pegawai') {
       Data = {
         ...Data,
-        mdcNumber: slate.mdcNumber.toLowerCase(),
+        mdcNumber: slate.mdcNumber,
         statusPegawai: 'pp',
       };
     }
     if (toggle === 'juruterapi') {
       Data = {
         ...Data,
-        mdtbNumber: slate.mdtbNumber.toLowerCase(),
+        mdtbNumber: slate.mdtbNumber,
         statusPegawai: 'jp',
       };
     }
     if (toggle === 'fasiliti') {
       Data = {
         ...Data,
-        daerah: slate.daerah.toLowerCase(),
-        negeri: slate.negeri.toLowerCase(),
-        kodFasiliti: slate.kodFasiliti.toLowerCase(),
-        kodFasilitiGiret: slate.kodFasilitiGiret.toLowerCase(),
+        daerah: slate.daerah,
+        negeri: slate.negeri,
+        kodFasiliti: slate.kodFasiliti,
+        kodFasilitiGiret: slate.kodFasilitiGiret,
       };
     }
     console.log(Data);
