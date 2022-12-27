@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { nama } = req.query;
 
   if (!nama) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   const results = await prisma.pegawai.findMany({
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   });
 
   if (!results) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   res.status(200).json(results);

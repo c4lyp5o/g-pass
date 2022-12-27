@@ -6,15 +6,15 @@ export default async function handler(req, res) {
   const { negeri, daerah } = req.query;
 
   if (!negeri && !daerah) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   if (!negeri && daerah) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   if (negeri && !daerah) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   const results = await prisma.fasiliti.findMany({
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   });
 
   if (!results) {
-    return res.status(200).json([]);
+    return res.status(404).json([]);
   }
 
   res.status(200).json(results);
