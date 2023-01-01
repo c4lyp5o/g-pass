@@ -48,7 +48,7 @@ export default async function handler(req, res) {
             await prisma.pegawai.create({
               data: {
                 nama: row.nama,
-                statusPegawai: row.statusPegawai,
+                statusPegawai: 'pp',
                 mdcNumber: row.mdcNumber,
               },
             });
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
             await prisma.juruterapi.create({
               data: {
                 nama: row.nama,
-                statusPegawai: row.statusPegawai,
+                statusPegawai: 'jp',
                 mdtbNumber: row.mdtbNumber,
               },
             });
@@ -107,7 +107,6 @@ export default async function handler(req, res) {
             await prisma.fasiliti.create({
               data: {
                 nama: row.nama,
-                statusPegawai: row.statusPegawai,
                 daerah: row.daerah,
                 negeri: row.negeri,
                 kodFasiliti: row.kodFasiliti,

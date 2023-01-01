@@ -39,7 +39,7 @@ export default async function handler(req, res) {
           if (!ppData[0].mdcNumber) {
             return res.status(400).json({ msg: 'mdcNumber is required' });
           }
-          if (!addmode) {
+          if (addmode === 'false') {
             await prisma.pegawai.deleteMany({});
           }
           for (let row of ppData) {
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
           if (!jpData[0].mdtbNumber) {
             return res.status(400).json({ msg: 'mdtbNumber is required' });
           }
-          if (!addmode) {
+          if (addmode === 'false') {
             await prisma.juruterapi.deleteMany({});
           }
           for (let row of jpData) {
@@ -97,7 +97,7 @@ export default async function handler(req, res) {
               msg: 'kodFasiliti and kodFasilitiGiret is required',
             });
           }
-          if (!addmode) {
+          if (addmode === 'false') {
             await prisma.fasiliti.deleteMany({});
           }
           for (let row of fsData) {
@@ -128,7 +128,7 @@ export default async function handler(req, res) {
           if (!kkData[0].kodFasiliti) {
             return res.status(400).json({ msg: 'kodFasiliti is required' });
           }
-          if (!addmode) {
+          if (addmode === 'false') {
             await prisma.kkiakd.deleteMany({});
           }
           for (let row of kkData) {
