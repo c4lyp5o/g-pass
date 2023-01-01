@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
 
 import Data from '../components/data';
 import Loading from '../components/loading';
@@ -48,12 +47,12 @@ export default function Home() {
             className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
               toggle === 'kkiakd' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
             }`}
-            onClick={() => toast('Coming Soon')}
+            onClick={() => setToggle('kkiakd')}
           >
             KKIA / KD
           </button>
         </div>
-        {toggle ? <Data toggle={toggle} /> : null}
+        {toggle ? <Data key={toggle} toggle={toggle} /> : null}
       </div>
     );
   }

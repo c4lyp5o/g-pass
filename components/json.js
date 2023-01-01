@@ -10,6 +10,16 @@ const AddJson = ({ toggle, setAddJson }) => {
   const [addingData, setAddingData] = useState(false);
   const [success, setSuccess] = useState(false);
   const [count, setCount] = useState(0);
+  const [addMode, setAddMode] = useState(false);
+
+  const noWayBack = () => {
+    if (addingData) {
+      toast('No going back now!');
+      return;
+    } else {
+      setAddJson(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,23 +36,19 @@ const AddJson = ({ toggle, setAddJson }) => {
     const formData = new FormData();
     formData.append('jsonFile', jsonFile);
     formData.append('toggle', toggle);
+    formData.append('addmode', addMode);
     try {
-      const response = await toast.promise(
-        axios.post('/api/processjson', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }),
-        {
-          loading: 'Memproses...',
-          success: `Berjaya menambah ${response.data.added} data!`,
-          error: 'Gagal!',
-        }
-      );
-      setCount(parseInt(response.data.added));
+      const res = await axios.post('/api/processjson', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setCount(parseInt(res.data.added));
       setSuccess(true);
+      toast.success('Data berjaya ditambah');
     } catch (error) {
       console.error(error);
+      toast.error(`Data gagal ditambah kerana ${error.response.data.msg}`);
     }
     setAddingData(false);
   };
@@ -50,33 +56,13 @@ const AddJson = ({ toggle, setAddJson }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div
-          className={styles.darkBG}
-          onClick={() => {
-            if (addingData) {
-              toast('No going back now!');
-              return;
-            } else {
-              setAddJson(false);
-            }
-          }}
-        />
+        <div className={styles.darkBG} onClick={noWayBack} />
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
               <h5 className={styles.heading}>TAMBAH DATA MENGGUNAKAN JSON</h5>
             </div>
-            <button
-              className={styles.closeBtn}
-              onClick={() => {
-                if (addingData) {
-                  toast('No going back now!');
-                  return;
-                } else {
-                  setAddJson(false);
-                }
-              }}
-            >
+            <button className={styles.closeBtn} onClick={noWayBack}>
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </button>
             <div className={styles.modalContent}>
@@ -86,20 +72,27 @@ const AddJson = ({ toggle, setAddJson }) => {
                   type='file'
                   id='jsonFile'
                 />
-                <button
-                  className={`flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-5 ${
-                    addingData ? 'disabled' : ''
-                  }`}
-                  disabled={`${addingData ? true : false}`}
-                  type='submit'
-                >
-                  {addingData ? 'Sabar...' : 'Upload'}
-                </button>
+                <p className='text-gray-500 text-xs italic mt-5'>
+                  {addingData ? 'Sabar...' : ''}
+                </p>
                 <p className='text-red-500 text-xs italic mt-5'>
                   {addingData ? 'Memproses...' : 'Pilih File JSON'}
                 </p>
+                <input
+                  type='checkbox'
+                  id='addmode'
+                  className='form-checkbox h-5 w-5 text-green-600'
+                  name='addmode'
+                  value={true}
+                  onChange={(e) => {
+                    setAddMode(e.target.checked);
+                  }}
+                />
+                <label htmlFor='toggle' className='ml-2'>
+                  Tambah data tanpa menghapuskan data lama
+                </label>
                 {success && (
-                  <p className='text-green-500 text-xs italic'>
+                  <p className='text-green-500 text-xs italic mt-5'>
                     {count > 0
                       ? `Sebanyak ${count} data berhasil ditambah`
                       : null}
@@ -112,13 +105,7 @@ const AddJson = ({ toggle, setAddJson }) => {
                 {addingData ? <BusyButton /> : <SubmitButton func='add' />}
                 <button
                   className='capitalize bg-red-400 rounded-md shadow-xl p-2 hover:bg-red-600 transition-all'
-                  onClick={() => {
-                    if (addingData) {
-                      return toast('No going back now!');
-                    } else {
-                      setAddJson(false);
-                    }
-                  }}
+                  onClick={noWayBack}
                 >
                   {addingData ? 'Please Wait...' : 'Cancel'}
                 </button>

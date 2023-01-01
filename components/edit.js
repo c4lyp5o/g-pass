@@ -40,12 +40,25 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
       bil: entity.bil,
     };
     if (toggle === 'pegawai') {
+      if (slate.mdcNumber.match(/[^0-9]/)) {
+        toast.error('MDC Number hanya boleh mengandungi nombor');
+        setEditingData(false);
+        return;
+      }
       Data = {
         ...Data,
         updateMdcNumber: slate.mdcNumber,
       };
     }
     if (toggle === 'juruterapi') {
+      if (!slate.mdtbNumber.match(/^(MDTB|mdtb)/)) {
+        toast.error('MDTB Number mesti diawali dengan MDTB');
+        setAddingData(false);
+        return;
+      }
+      if (slate.mdtbNumber.match(/^(mdtb)/)) {
+        slate.mdtbNumber = slate.mdtbNumber.toUpperCase();
+      }
       Data = {
         ...Data,
         updateMdtbNumber: slate.mdtbNumber,
@@ -57,7 +70,15 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
         updateDaerah: slate.daerah,
         updateNegeri: slate.negeri,
         updateKodFasiliti: slate.kodFasiliti,
-        updatekodFasilitiGiret: slate.kodFasilitiGiret,
+        updateKodFasilitiGiret: slate.kodFasilitiGiret,
+      };
+    }
+    if (toggle === 'kkiakd') {
+      Data = {
+        ...Data,
+        updateNamaHospital: slate.namaHospital,
+        updateKodFasiliti: slate.kodFasiliti,
+        updateJenisFasiliti: slate.jenisFasiliti,
       };
     }
     console.log(Data);
@@ -78,8 +99,9 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
   };
 
   const InputProps = {
-    setSlate,
     slate,
+    setSlate,
+    toggle,
   };
 
   if (!data) return <Loading />;
@@ -104,7 +126,7 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
             <div className={styles.modalContent}>
-              {toggle !== 'fasiliti' ? (
+              {toggle !== 'fasiliti' && toggle !== 'kkiakd' ? (
                 <Human {...InputProps} />
               ) : (
                 <NonHuman {...InputProps} />

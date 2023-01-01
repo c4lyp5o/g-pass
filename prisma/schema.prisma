@@ -28,6 +28,15 @@ model Fasiliti {
   kodFasiliti  String
   kodFasilitiGiret  String
 }
+model Kkiakd {
+  bil    Int     @id @default(autoincrement())
+  nama  String
+  namaHospital String
+  negeri  String
+  daerah  String
+  kodFasiliti  String
+  jenisFasiliti String
+}
 model Account {
   id                 String  @id @default(cuid())
   userId             String

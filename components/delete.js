@@ -35,7 +35,7 @@ const Modal = ({ setOpenDeleteModal, toggle, entity, mutate }) => {
         onClick={() => setOpenDeleteModal(false)}
       />
       <div className={styles.centered}>
-        <div className={styles.modal}>
+        <div className={styles.modalDelete}>
           <div className={styles.modalHeader}>
             <h5 className={styles.heading}>AWAS!</h5>
           </div>

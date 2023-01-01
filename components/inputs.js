@@ -82,7 +82,30 @@ export function NonHuman(props) {
             }
           />
         </div>
-        <p>
+        {props.toggle === 'kkiakd' && (
+          <>
+            <p className='mt-2'>
+              Nama Hospital {props.toggle}
+              <span className='font-semibold text-lg text-user6'>*</span>
+            </p>
+            <div className='grid gap-1'>
+              <input
+                required
+                className='border-2'
+                value={props.slate.namaHospital}
+                type='text'
+                key='namaHospital'
+                onChange={(e) =>
+                  props.setSlate({
+                    ...props.slate,
+                    namaHospital: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </>
+        )}
+        <p className='mt-2'>
           Negeri<span className='font-semibold text-lg text-user6'>*</span>
         </p>
         <div className='grid gap-1'>
@@ -97,7 +120,7 @@ export function NonHuman(props) {
             }
           />
         </div>
-        <p>
+        <p className='mt-2'>
           Daerah<span className='font-semibold text-lg text-user6'>*</span>
         </p>
         <div className='grid gap-1'>
@@ -112,41 +135,90 @@ export function NonHuman(props) {
             }
           />
         </div>
-        <p>
-          Kod Fasiliti
-          <span className='font-semibold text-lg text-user6'>*</span>
-        </p>
-        <div className='grid gap-1'>
-          <input
-            required
-            className='border-2'
-            value={props.slate.kodFasiliti}
-            type='text'
-            key='daerah'
-            onChange={(e) =>
-              props.setSlate({ ...props.slate, kodFasiliti: e.target.value })
-            }
-          />
-        </div>
-        <p>
-          Kod Fasiliti GiRet
-          <span className='font-semibold text-lg text-user6'>*</span>
-        </p>
-        <div className='grid gap-1'>
-          <input
-            required
-            className='border-2'
-            value={props.slate.kodFasilitiGiret}
-            type='text'
-            key='daerah'
-            onChange={(e) =>
-              props.setSlate({
-                ...props.slate,
-                kodFasilitiGiret: e.target.value,
-              })
-            }
-          />
-        </div>
+        {props.toggle === 'fasiliti' && (
+          <>
+            <p className='mt-2'>
+              Kod Fasiliti PIK
+              <span className='font-semibold text-lg text-user6'>*</span>
+            </p>
+            <div className='grid gap-1'>
+              <input
+                required
+                className='border-2'
+                value={props.slate.kodFasiliti}
+                type='text'
+                key='kodfasilitipik'
+                onChange={(e) =>
+                  props.setSlate({
+                    ...props.slate,
+                    kodFasiliti: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <p className='mt-2'>
+              Kod Fasiliti GiRet
+              <span className='font-semibold text-lg text-user6'>*</span>
+            </p>
+            <div className='grid gap-1'>
+              <input
+                required
+                className='border-2'
+                value={props.slate.kodFasilitiGiret}
+                type='text'
+                key='kodfasilitigiret'
+                onChange={(e) =>
+                  props.setSlate({
+                    ...props.slate,
+                    kodFasilitiGiret: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </>
+        )}
+        {props.toggle === 'kkiakd' && (
+          <>
+            <p className='mt-2'>
+              Kod Fasiliti
+              <span className='font-semibold text-lg text-user6'>*</span>
+            </p>
+            <div className='grid gap-1'>
+              <input
+                required
+                className='border-2'
+                value={props.slate.kodFasiliti}
+                type='text'
+                key='kodfasiliti'
+                onChange={(e) =>
+                  props.setSlate({
+                    ...props.slate,
+                    kodFasiliti: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <p className='mt-2'>
+              Jenis Fasiliti
+              <span className='font-semibold text-lg text-user6'>*</span>
+            </p>
+            <div className='grid gap-1'>
+              <input
+                required
+                className='border-2'
+                value={props.slate.jenisFasiliti}
+                type='text'
+                key='jenisfasiliti'
+                onChange={(e) =>
+                  props.setSlate({
+                    ...props.slate,
+                    jenisFasiliti: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

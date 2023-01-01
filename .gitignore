@@ -45,3 +45,4 @@ next-env.d.ts
 # local stuff
 /database/*
 /public/uploads/*
+/public/backups/*

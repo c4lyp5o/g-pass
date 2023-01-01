@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import nc from 'next-connect';
 import fs from 'fs';
 import path from 'path';
+import XLSX from 'xlsx';
 
 import { conf } from '../../middleware/conf';
 
@@ -55,6 +56,20 @@ gpassAPI.get(async (req, res) => {
         res.status(200).json({ items: [], pages: 0 });
       }
       break;
+    case 'kkiakd':
+      const kkiakdCount = await prisma.kkiakd.count();
+      if (kkiakdCount > 0) {
+        const kkiakdPages = Math.ceil(kkiakdCount / 1000);
+        x = page === 1 ? 0 : (page - 1) * 1000;
+        const dataKKIAKD = await prisma.kkiakd.findMany({
+          skip: x,
+          take: 1000,
+        });
+        res.status(200).json({ items: dataKKIAKD, pages: kkiakdPages });
+      } else {
+        res.status(200).json({ items: [], pages: 0 });
+      }
+      break;
     case 'individu':
       var { from, id } = req.query;
       switch (from) {
@@ -82,6 +97,14 @@ gpassAPI.get(async (req, res) => {
           });
           res.status(200).json(data1Fasiliti);
           break;
+        case 'kkiakd':
+          const data1KKIAKD = await prisma.kkiakd.findUnique({
+            where: {
+              bil: parseInt(id),
+            },
+          });
+          res.status(200).json(data1KKIAKD);
+          break;
         default:
           res.status(404).json({ message: 'Not Found' });
           break;
@@ -89,47 +112,207 @@ gpassAPI.get(async (req, res) => {
       break;
     case 'download':
       console.log('download');
-      var { from } = req.query;
+      var { from, filetype } = req.query;
       switch (from) {
         case 'pegawai':
-          const dataPegawai = await prisma.pegawai.findMany();
-          const pegawaiJSON = JSON.stringify(dataPegawai);
-          fs.writeFileSync(
-            path.join(process.cwd(), 'public', 'data', 'pegawai.json'),
-            pegawaiJSON
-          );
-          const ppjson = fs.readFileSync(
-            process.cwd(),
-            'public',
-            'data',
-            'pegawai.json'
-          );
-          res.status(200).send(ppjson);
+          console.log('dl pegawai');
+          if (filetype === 'json') {
+            const dataPegawai = await prisma.pegawai.findMany();
+            const pegawaiJSON = JSON.stringify(dataPegawai);
+            const jsonfile = path.join(process.cwd(), 'public', 'pegawai.json');
+            fs.writeFileSync(jsonfile, pegawaiJSON);
+            const ppjson = fs.readFileSync(jsonfile);
+            setTimeout(() => {
+              fs.unlinkSync(jsonfile);
+            }, 100);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send(ppjson);
+          }
+          if (filetype === 'xlsx') {
+            const dataPegawai = await prisma.pegawai.findMany();
+            const pegawaiJSON = JSON.stringify(dataPegawai);
+            fs.writeFileSync(
+              path.join(process.cwd(), 'public', 'pegawai.json'),
+              pegawaiJSON
+            );
+            const ppjson = fs.readFileSync(
+              path.join(process.cwd(), 'public', 'pegawai.json')
+            );
+            const ppdata = JSON.parse(ppjson);
+            const ppwb = XLSX.utils.book_new();
+            const ppsheet = XLSX.utils.json_to_sheet(ppdata);
+            XLSX.utils.book_append_sheet(ppwb, ppsheet, 'Pegawai');
+            const ppfile = path.join(process.cwd(), 'public', 'pegawai.xlsx');
+            XLSX.writeFile(ppwb, ppfile);
+            const workbook = XLSX.readFile(ppfile);
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            for (const cell in sheet) {
+              if (sheet[cell].v) {
+                sheet[cell].s = {
+                  border: {
+                    top: { style: 'thin', color: { auto: 1 } },
+                    bottom: { style: 'thin', color: { auto: 1 } },
+                    left: { style: 'thin', color: { auto: 1 } },
+                    right: { style: 'thin', color: { auto: 1 } },
+                  },
+                };
+              }
+            }
+            XLSX.writeFile(workbook, ppfile);
+            const ppxlsx = fs.readFileSync(ppfile);
+            setTimeout(() => {
+              fs.unlinkSync(ppfile);
+              fs.unlinkSync(path.join(process.cwd(), 'public', 'pegawai.json'));
+            }, 100);
+            res.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.status(200).send(ppxlsx);
+          }
           break;
         case 'juruterapi':
           console.log('dl juruterapi');
-          const dataJuruterapi = await prisma.juruterapi.findMany();
-          const juruterapiJSON = JSON.stringify(dataJuruterapi);
-          fs.writeFileSync(
-            path.join(process.cwd(), 'public', 'juruterapi.json'),
-            juruterapiJSON
-          );
-          const jpjson = fs.readFileSync(
-            path.join(process.cwd(), 'public', 'juruterapi.json')
-          );
-          res.setHeader('Content-Type', 'application/json');
-          res.status(200).send(jpjson);
+          if (filetype === 'json') {
+            const dataJuruterapi = await prisma.juruterapi.findMany();
+            const juruterapiJSON = JSON.stringify(dataJuruterapi);
+            const jsonfile = path.join(
+              process.cwd(),
+              'public',
+              'juruterapi.json'
+            );
+            fs.writeFileSync(jsonfile, juruterapiJSON);
+            const jpjson = fs.readFileSync(jsonfile);
+            setTimeout(() => {
+              fs.unlinkSync(jsonfile);
+            }, 100);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send(jpjson);
+          }
+          if (filetype === 'xlsx') {
+            const dataJuruterapi = await prisma.juruterapi.findMany();
+            const juruterapiJSON = JSON.stringify(dataJuruterapi);
+            fs.writeFileSync(
+              path.join(process.cwd(), 'public', 'juruterapi.json'),
+              juruterapiJSON
+            );
+            const jpjson = fs.readFileSync(
+              path.join(process.cwd(), 'public', 'juruterapi.json')
+            );
+            const data = XLSX.utils.json_to_sheet(JSON.parse(jpjson));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, data, 'JP');
+            const xlsxfile = path.join(
+              process.cwd(),
+              'public',
+              'juruterapi.xlsx'
+            );
+            XLSX.writeFile(workbook, xlsxfile);
+            const jpxlsx = fs.readFileSync(xlsxfile);
+            setTimeout(() => {
+              fs.unlinkSync(xlsxfile);
+              fs.unlinkSync(
+                path.join(process.cwd(), 'public', 'juruterapi.json')
+              );
+            }, 100);
+            res.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.status(200).send(jpxlsx);
+          }
           break;
         case 'fasiliti':
-          const dataFasiliti = await prisma.fasiliti.findMany();
-          const fasilitiJSON = JSON.stringify(dataFasiliti);
-          fs.writeFileSync(
-            path.join(process.cwd(), 'public', 'data', 'fasiliti.json'),
-            fasilitiJSON
-          );
-          res
-            .status(200)
-            .send(path.join(process.cwd(), 'public', 'data', 'fasiliti.json'));
+          console.log('dl fasiliti');
+          if (filetype === 'json') {
+            const dataFasiliti = await prisma.fasiliti.findMany();
+            const fasilitiJSON = JSON.stringify(dataFasiliti);
+            const jsonfile = path.join(
+              process.cwd(),
+              'public',
+              'fasiliti.json'
+            );
+            fs.writeFileSync(jsonfile, fasilitiJSON);
+            const fsjson = fs.readFileSync(jsonfile);
+            setTimeout(() => {
+              fs.unlinkSync(jsonfile);
+            }, 100);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send(fsjson);
+          }
+          if (filetype === 'xlsx') {
+            const dataFasiliti = await prisma.fasiliti.findMany();
+            const fasilitiJSON = JSON.stringify(dataFasiliti);
+            fs.writeFileSync(
+              path.join(process.cwd(), 'public', 'fasiliti.json'),
+              fasilitiJSON
+            );
+            const fsjson = fs.readFileSync(
+              path.join(process.cwd(), 'public', 'fasiliti.json')
+            );
+            const data = XLSX.utils.json_to_sheet(JSON.parse(fsjson));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, data, 'FP');
+            const xlsxfile = path.join(
+              process.cwd(),
+              'public',
+              'fasiliti.xlsx'
+            );
+            XLSX.writeFile(workbook, xlsxfile);
+            const fsxlsx = fs.readFileSync(xlsxfile);
+            setTimeout(() => {
+              fs.unlinkSync(xlsxfile);
+              fs.unlinkSync(
+                path.join(process.cwd(), 'public', 'fasiliti.json')
+              );
+            }, 100);
+            res.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.status(200).send(fsxlsx);
+          }
+          break;
+        case 'kkiakd':
+          console.log('dl kkiakd');
+          if (filetype === 'json') {
+            const dataKKIAKD = await prisma.kkiakd.findMany();
+            const kkiakdJSON = JSON.stringify(dataKKIAKD);
+            const jsonfile = path.join(process.cwd(), 'public', 'kkiakd.json');
+            fs.writeFileSync(jsonfile, kkiakdJSON);
+            const kkiakdjson = fs.readFileSync(jsonfile);
+            setTimeout(() => {
+              fs.unlinkSync(jsonfile);
+            }, 100);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send(kkiakdjson);
+          }
+          if (filetype === 'xlsx') {
+            const dataKKIAKD = await prisma.kkiakd.findMany();
+            const kkiakdJSON = JSON.stringify(dataKKIAKD);
+            fs.writeFileSync(
+              path.join(process.cwd(), 'public', 'kkiakd.json'),
+              kkiakdJSON
+            );
+            const kkiakdjson = fs.readFileSync(
+              path.join(process.cwd(), 'public', 'kkiakd.json')
+            );
+            const data = XLSX.utils.json_to_sheet(JSON.parse(kkiakdjson));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, data, 'KKIAKD');
+            const xlsxfile = path.join(process.cwd(), 'public', 'kkiakd.xlsx');
+            XLSX.writeFile(workbook, xlsxfile);
+            const kkiakdxlsx = fs.readFileSync(xlsxfile);
+            setTimeout(() => {
+              fs.unlinkSync(xlsxfile);
+              fs.unlinkSync(path.join(process.cwd(), 'public', 'kkiakd.json'));
+            }, 100);
+            res.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.status(200).send(kkiakdxlsx);
+          }
           break;
         default:
           res.status(404).json({ message: 'Not Found' });
@@ -145,7 +328,6 @@ gpassAPI.get(async (req, res) => {
 gpassAPI.post(async (req, res) => {
   const prisma = new PrismaClient();
   const { query, payload } = req.body;
-
   switch (query) {
     case 'create':
       console.log('create');
@@ -153,6 +335,7 @@ gpassAPI.post(async (req, res) => {
       var {
         type,
         nama,
+        namaHospital,
         statusPegawai,
         mdcNumber,
         mdtbNumber,
@@ -160,13 +343,14 @@ gpassAPI.post(async (req, res) => {
         negeri,
         kodFasiliti,
         kodFasilitiGiret,
+        jenisFasiliti,
       } = payload;
       if (type === 'pegawai') {
         add = await prisma.pegawai.create({
           data: {
             nama: nama,
             statusPegawai: statusPegawai,
-            mdcNumber: mdcNumber,
+            mdcNumber: parseInt(mdcNumber),
           },
         });
       }
@@ -190,6 +374,18 @@ gpassAPI.post(async (req, res) => {
           },
         });
       }
+      if (type === 'kkiakd') {
+        add = await prisma.kkiakd.create({
+          data: {
+            nama: nama,
+            namaHospital: namaHospital,
+            daerah: daerah,
+            negeri: negeri,
+            kodFasiliti: kodFasiliti,
+            jenisFasiliti: jenisFasiliti,
+          },
+        });
+      }
       res.status(200).json({ message: 'done', added: add });
       break;
     case 'read':
@@ -203,6 +399,9 @@ gpassAPI.post(async (req, res) => {
       }
       if (statusPegawai === 'fs') {
         read = await prisma.fasiliti.findMany();
+      }
+      if (statusPegawai === 'kkiakd') {
+        read = await prisma.kkiakd.findMany();
       }
       res.status(200).json(read);
       break;
@@ -231,13 +430,13 @@ gpassAPI.post(async (req, res) => {
           },
         });
       }
-      // let decryptedDataSatu = {
-      //   bil: dataSatuPegawai.bil,
-      //   nama: crypter.decrypt(dataSatuPegawai.nama),
-      //   statusPegawai: crypter.decrypt(dataSatuPegawai.statusPegawai),
-      //   gred: crypter.decrypt(dataSatuPegawai.gred),
-      //   mdcNumber: crypter.decrypt(dataSatuPegawai.mdcNumber),
-      // };
+      if (statusPegawai === 'kkiakd') {
+        readOne = await prisma.kkiakd.findUnique({
+          where: {
+            bil: forRead,
+          },
+        });
+      }
       res.status(200).json(readOne);
       break;
     case 'update':
@@ -246,12 +445,14 @@ gpassAPI.post(async (req, res) => {
         type,
         bil,
         updateNama,
+        updateNamaHospital,
         updateMdcNumber,
         updateMdtbNumber,
         updateDaerah,
         updateNegeri,
         updateKodFasiliti,
         updateKodFasilitiGiret,
+        updateJenisFasiliti,
       } = payload;
       let update;
       if (type === 'pegawai') {
@@ -261,7 +462,7 @@ gpassAPI.post(async (req, res) => {
           },
           data: {
             nama: updateNama,
-            mdcNumber: updateMdcNumber,
+            mdcNumber: parseInt(updateMdcNumber),
           },
         });
       }
@@ -290,6 +491,21 @@ gpassAPI.post(async (req, res) => {
           },
         });
       }
+      if (type === 'kkiakd') {
+        update = await prisma.kkiakd.update({
+          where: {
+            bil,
+          },
+          data: {
+            nama: updateNama,
+            namaHospital: updateNamaHospital,
+            daerah: updateDaerah,
+            negeri: updateNegeri,
+            kodFasiliti: updateKodFasiliti,
+            jenisFasiliti: updateJenisFasiliti,
+          },
+        });
+      }
       res.status(200).json(update);
       break;
     case 'delete':
@@ -312,6 +528,13 @@ gpassAPI.post(async (req, res) => {
       }
       if (type === 'fasiliti') {
         deleted = await prisma.fasiliti.delete({
+          where: {
+            bil: bil,
+          },
+        });
+      }
+      if (type === 'kkiakd') {
+        deleted = await prisma.kkiakd.delete({
           where: {
             bil: bil,
           },

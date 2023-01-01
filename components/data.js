@@ -9,11 +9,11 @@ import AddExcel from './excel';
 import AddJson from './json';
 
 import Loading from './loading';
+import { toast } from 'react-toastify';
 
 async function fetcher(url) {
   const res = await fetch(url);
   const json = await res.json();
-  console.log(json);
   return json;
 }
 
@@ -32,17 +32,36 @@ export default function Data({ toggle }) {
   );
 
   const getJSON = async () => {
-    const res = await fetch(`/api/gpass?type=download&from=${toggle}`);
+    const res = await fetch(
+      `/api/gpass?type=download&from=${toggle}&filetype=json`
+    );
+    const blob = await res.blob();
+    const link = document.createElement('a');
+    link.download = `${toggle}.json`;
+    link.href = URL.createObjectURL(new Blob([blob]));
+    link.addEventListener('click', (e) => {
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+      }, 100);
+    });
+    link.click();
+  };
+
+  const getXLSX = async () => {
+    const res = await fetch(
+      `/api/gpass?type=download&from=${toggle}&filetype=xlsx`
+    );
     const blob = await res.blob();
     console.log(blob);
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href;
-    a.download = `${toggle}.json`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+    const link = document.createElement('a');
+    link.download = `${toggle}.xlsx`;
+    link.href = URL.createObjectURL(new Blob([blob]));
+    link.addEventListener('click', (e) => {
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+      }, 100);
+    });
+    link.click();
   };
 
   const props = {
@@ -74,7 +93,9 @@ export default function Data({ toggle }) {
               className='outline outline-1 outline-green-600 rounded-md shadow-md w-96 p-2'
               id='search'
               placeholder={
-                toggle !== 'fasiliti' ? 'Cari pegawai...' : 'Cari fasiliti...'
+                toggle !== 'fasiliti' && toggle !== 'kkiakd'
+                  ? 'Cari pegawai...'
+                  : 'Cari fasiliti...'
               }
               onChange={(e) => setPhilter(e.target.value.toLowerCase())}
             />
@@ -94,15 +115,21 @@ export default function Data({ toggle }) {
             </button>
             <button
               className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded mr-2'
-              // onClick={(e) => setAddJson(true)}
+              onClick={(e) => getXLSX()}
             >
               Download Excel
             </button>
             <button
-              className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded'
+              className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded mr-2'
               onClick={(e) => getJSON()}
             >
               Download JSON
+            </button>
+            <button
+              className='bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded'
+              onClick={(e) => toast('Coming Soon...')}
+            >
+              Restore from backup
             </button>
           </div>
         </div>
@@ -148,6 +175,25 @@ export default function Data({ toggle }) {
                     </th>
                     <th className='px-2 py-1 outline outline-1 outline-offset-1'>
                       Kod Fasiliti GiRet
+                    </th>
+                  </>
+                )}
+                {toggle === 'kkiakd' && (
+                  <>
+                    <th className='px-2 py-1 outline outline-1 outline-offset-1'>
+                      Nama Hospital
+                    </th>
+                    <th className='px-2 py-1 outline outline-1 outline-offset-1'>
+                      Daerah
+                    </th>
+                    <th className='px-2 py-1 outline outline-1 outline-offset-1'>
+                      Negeri
+                    </th>
+                    <th className='px-2 py-1 outline outline-1 outline-offset-1'>
+                      Kod Fasiliti
+                    </th>
+                    <th className='px-2 py-1 outline outline-1 outline-offset-1'>
+                      Jenis Fasiliti
                     </th>
                   </>
                 )}
@@ -200,6 +246,25 @@ export default function Data({ toggle }) {
                         </td>
                         <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
                           {o.kodFasilitiGiret}
+                        </td>
+                      </>
+                    )}
+                    {toggle === 'kkiakd' && (
+                      <>
+                        <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
+                          {o.namaHospital}
+                        </td>
+                        <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
+                          {o.daerah}
+                        </td>
+                        <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
+                          {o.negeri}
+                        </td>
+                        <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
+                          {o.kodFasiliti}
+                        </td>
+                        <td className='px-2 py-1 outline outline-1 outline-yellow-300 outline-offset-1'>
+                          {o.jenisFasiliti}
                         </td>
                       </>
                     )}
@@ -281,11 +346,11 @@ export default function Data({ toggle }) {
           </div>
         </div>
       </div>
-      {openAddModal ? <AddModal {...props} /> : null}
-      {openEditModal ? <EditModal {...props} /> : null}
-      {openDeleteModal ? <DeleteModal {...props} /> : null}
-      {addExcel ? <AddExcel {...props} /> : null}
-      {addJson ? <AddJson {...props} /> : null}
+      {openAddModal ? <AddModal key={toggle} {...props} /> : null}
+      {openEditModal ? <EditModal key={toggle} {...props} /> : null}
+      {openDeleteModal ? <DeleteModal key={toggle} {...props} /> : null}
+      {addExcel ? <AddExcel key={toggle} {...props} /> : null}
+      {addJson ? <AddJson key={toggle} {...props} /> : null}
     </>
   );
 }
