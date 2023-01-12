@@ -20,8 +20,8 @@ RUN npm install
 # copy the generated modules and all other files to the container
 COPY . .
 
-# migrate models to database
-RUN npx prisma migrate dev --name init
+# apply migration to database for production
+RUN npx prisma migrate deploy
 
 # our app is running on port 3000 within the container, so need to expose it
 EXPOSE 3000
