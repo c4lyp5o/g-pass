@@ -13,6 +13,7 @@ export default async function handler(req, res) {
     where: {
       nama: {
         contains: nama,
+        mode: 'insensitive',
       },
     },
   });
