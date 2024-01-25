@@ -20,9 +20,6 @@ RUN npm install
 # copy the generated modules and all other files to the container
 COPY . .
 
-# apply migration to database for production, must run "npx prisma migrate dev" first in local development to init the database
-# RUN npx prisma migrate deploy
-
 # generate prisma client for querying
 RUN npx prisma generate
 
