@@ -21,10 +21,10 @@ RUN npm install
 COPY . .
 
 # apply migration to database for production, must run "npx prisma migrate dev" first in local development to init the database
-RUN npx prisma migrate deploy
+# RUN npx prisma migrate deploy
 
 # generate client
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # our app is running on port 3000 within the container, so need to expose it
 EXPOSE 3000
