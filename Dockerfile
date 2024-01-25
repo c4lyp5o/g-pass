@@ -1,5 +1,5 @@
 # pull the Node.js Docker image
-FROM node:lts-alpine
+FROM node:18-alpine
 
 # update the package index
 RUN apk update
