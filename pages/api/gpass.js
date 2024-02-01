@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import nc from 'next-connect';
+import { createRouter } from 'next-connect';
 import fs from 'fs';
 import path from 'path';
 import XLSX from 'xlsx';
 
 import { conf } from '../../middleware/conf';
 
-const gpassAPI = nc().use(conf);
+const gpassAPI = createRouter().use(conf);
 
 gpassAPI.get(async (req, res) => {
   const prisma = new PrismaClient();
@@ -548,4 +548,9 @@ gpassAPI.post(async (req, res) => {
   }
 });
 
-export default gpassAPI;
+export default gpassAPI.handler({
+  onError: (err, req, res) => {
+    console.error(err.stack);
+    res.status(err.statusCode || 500).end(err.message);
+  },
+});

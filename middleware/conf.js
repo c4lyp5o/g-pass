@@ -1,4 +1,4 @@
-import nc from 'next-connect';
+import { createRouter } from 'next-connect';
 import log4js from 'log4js';
 import crypt from 'simple-crypto-js';
 
@@ -34,7 +34,7 @@ log4js.configure({
 const crypter = new crypt(process.env.SALT);
 const logger = log4js.getLogger('server');
 
-const conf = nc()
+const conf = createRouter()
   .use((req, res, next) => {
     logger.info('Request received');
     next();
