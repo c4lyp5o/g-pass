@@ -9,7 +9,7 @@ export default function Layout({ children }) {
       <Head>
         <title>Sistem G-PASS</title>
         <meta name='description' content='G-PASS API platfom' />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel='icon' href='/gpass/favicon.ico' />
       </Head>
       <Header />
       <div className='absolute inset-0 -z-10 bg-admin5'></div>
