@@ -4,18 +4,21 @@ import { signIn, useSession } from 'next-auth/react';
 import Data from '../components/data';
 import Loading from '../components/loading';
 
-export default function Home() {
-  const { data: session, status } = useSession();
-  const loading = status === 'loading';
+export default function Page() {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      signIn();
+    },
+  });
+
   const [toggle, setToggle] = useState(null);
 
-  if (loading) {
+  if (status === 'loading') {
     return <Loading />;
   }
 
-  if (!session) return signIn();
-
-  if (session) {
+  if (status === 'authenticated') {
     return (
       <div className='mx-auto w-1/2 h-1/2 flex flex-col justify-center items-center mt-2'>
         <div className='grid grid-cols-4 gap-2'>
