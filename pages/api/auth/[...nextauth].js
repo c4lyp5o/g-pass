@@ -23,12 +23,8 @@ const options = {
     // }),
     // REAL mailer
     EmailProvider({
-      server: {
-        secure: false,
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-      },
-      from: process.env.SMTP_FROM,
+      server: process.env.SMTP_HOST,
+      from: process.env.EMAIL_FROM,
     }),
     // OG mailer
     // EmailProvider({
@@ -58,11 +54,9 @@ const options = {
     //         username: credentials.username,
     //       },
     //     });
-
     //     if (user && user.password === credentials.password) {
     //       return user;
     //     }
-
     //     return null;
     //   },
     // }),
