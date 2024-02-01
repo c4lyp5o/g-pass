@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "install-prod": "npm ci",
+    "prune-prod": "npm ci --omit=dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

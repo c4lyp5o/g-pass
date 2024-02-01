@@ -13,8 +13,13 @@ WORKDIR /usr/src/app
 # bundle app source
 COPY . .
 
-# install node_modules, generate prisma client for querying, build optimized production
-RUN npm install && npx prisma generate && npm run build
+# manage dependency & build production
+RUN npm run install-prod && \
+    npm run build && \
+    rm -rf node_modules && \
+    npm run prune-prod && \
+    npx prisma generate && \
+    npm cache clean --force
 
 # app run on port 3000
 EXPOSE 3000
