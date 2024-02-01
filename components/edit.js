@@ -17,7 +17,7 @@ async function fetcher(url) {
 
 const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
   const { data, error } = useSWR(
-    `/api/gpass?type=individu&from=${toggle}&id=${entity.bil}`,
+    `/gpass/api/gpass?type=individu&from=${toggle}&id=${entity.bil}`,
     fetcher
   );
 
@@ -83,7 +83,7 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
     }
     console.log(Data);
     try {
-      const res = await axios.post('/api/gpass', {
+      const res = await axios.post('/gpass/api/gpass', {
         query: 'update',
         payload: Data,
       });

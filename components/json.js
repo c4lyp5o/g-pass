@@ -38,7 +38,7 @@ const AddJson = ({ toggle, setAddJson }) => {
     formData.append('toggle', toggle);
     formData.append('addmode', addMode);
     try {
-      const res = await axios.post('/api/processjson', formData, {
+      const res = await axios.post('/gpass/api/processjson', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

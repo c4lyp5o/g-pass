@@ -12,7 +12,7 @@ const Modal = ({ setOpenDeleteModal, entity, mutate }) => {
     e.preventDefault();
     setDeletingData(true);
     try {
-      const res = await axios.post('/api/gpass', {
+      const res = await axios.post('/gpass/api/gpass', {
         query: 'delete',
         payload: { statusPegawai: entity.statusPegawai, bil: entity.bil },
       });

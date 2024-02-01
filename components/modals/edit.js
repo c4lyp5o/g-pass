@@ -11,7 +11,7 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
   const { data, error } = useSWR(
-    `/api/gpass?type=individu&id=${entity.bil}`,
+    `/gpass/api/gpass?type=individu&id=${entity.bil}`,
     fetcher
   );
   const [nama, setNama] = useState('');
@@ -51,7 +51,7 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
     }
     console.log(Data);
     try {
-      const res = await axios.post('/api/gpass', {
+      const res = await axios.post('/gpass/api/gpass', {
         query: 'update',
         updateNama: Data.nama,
         updateGred: Data.gred,

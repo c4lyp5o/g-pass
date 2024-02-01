@@ -7,7 +7,11 @@ import Layout from '../components/layout';
 
 export default function MyApp({ Component, pageProps }) {
   return (
-    <SessionProvider session={pageProps.session} refetchInterval={5 * 60}>
+    <SessionProvider
+      session={pageProps.session}
+      refetchInterval={5 * 60}
+      basePath='/gpass/api/auth'
+    >
       <Layout>
         <Component {...pageProps} />
       </Layout>

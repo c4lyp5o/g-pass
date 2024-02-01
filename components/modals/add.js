@@ -47,7 +47,7 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
     }
     console.log(Data);
     try {
-      const res = await axios.post('/api/gpass', {
+      const res = await axios.post('/gpass/api/gpass', {
         query: 'create',
         payload: Data,
       });

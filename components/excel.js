@@ -42,7 +42,7 @@ const AddExcel = ({ toggle, setAddExcel }) => {
     formData.append('toggle', toggle);
     formData.append('addmode', addMode);
     try {
-      const res = await axios.post('/api/processxlsx', formData, {
+      const res = await axios.post('/gpass/api/processxlsx', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
