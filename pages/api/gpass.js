@@ -13,8 +13,7 @@ const gpassAPI = createRouter().use(conf);
 gpassAPI.get(async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    res.status(401).json({ msg: 'Unauthorized' });
-    return;
+    return res.status(401).json({ msg: 'Unauthorized' });
   }
 
   const prisma = new PrismaClient();
@@ -335,8 +334,14 @@ gpassAPI.get(async (req, res) => {
 });
 
 gpassAPI.post(async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ msg: 'Unauthorized' });
+  }
+
   const prisma = new PrismaClient();
   const { query, payload } = req.body;
+
   switch (query) {
     case 'create':
       console.log('create');
@@ -395,7 +400,7 @@ gpassAPI.post(async (req, res) => {
           },
         });
       }
-      res.status(200).json({ message: 'done', added: add });
+      res.status(201).json({ message: 'done', added: add });
       break;
     case 'read':
       console.log('read');
