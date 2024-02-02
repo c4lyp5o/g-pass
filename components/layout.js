@@ -8,7 +8,7 @@ export default function Layout({ children }) {
     <>
       <Head>
         <title>Sistem G-PASS</title>
-        <meta name='description' content='G-PASS API platfom' />
+        <meta name='description' content='G-PASS API platform' />
         <link rel='icon' href='/gpass/favicon.ico' />
       </Head>
       <Header />
