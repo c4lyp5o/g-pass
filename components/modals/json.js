@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import axios from 'axios';
 
-import { BusyButton, SubmitButton } from './buttons';
-import styles from '../styles/Modal.module.css';
+import { BusyButton, SubmitButton } from '../buttons';
+import styles from '../../styles/Modal.module.css';
 import { toast } from 'react-toastify';
 
-const AddExcel = ({ toggle, setAddExcel }) => {
+const AddJson = ({ toggle, setAddJson }) => {
   const [addingData, setAddingData] = useState(false);
   const [success, setSuccess] = useState(false);
   const [count, setCount] = useState(0);
@@ -17,32 +17,28 @@ const AddExcel = ({ toggle, setAddExcel }) => {
       toast('No going back now!');
       return;
     } else {
-      setAddExcel(false);
+      setAddJson(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAddingData(true);
-    if (e.target.excelFile.value === '') {
+    if (e.target.jsonFile.value === '') {
       toast.error('Sila pilih fail');
       return;
     }
-    if (
-      e.target.excelFile.files[0].type !==
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
-      e.target.excelFile.files[0].type !== 'application/vnd.ms-excel'
-    ) {
-      toast.error('Fail bukan xlsx atau xls');
+    if (e.target.jsonFile.files[0].type !== 'application/json') {
+      toast.error('Fail bukan JSON');
       return;
     }
-    const excelFile = e.target.excelFile.files[0];
+    const jsonFile = e.target.jsonFile.files[0];
     const formData = new FormData();
-    formData.append('excelFile', excelFile);
+    formData.append('jsonFile', jsonFile);
     formData.append('toggle', toggle);
     formData.append('addmode', addMode);
     try {
-      const res = await axios.post('/gpass/api/processxlsx', formData, {
+      const res = await axios.post('/gpass/api/processjson', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -64,23 +60,23 @@ const AddExcel = ({ toggle, setAddExcel }) => {
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
-              <h5 className={styles.heading}>TAMBAH DATA MENGGUNAKAN XLSX</h5>
+              <h5 className={styles.heading}>TAMBAH DATA MENGGUNAKAN JSON</h5>
             </div>
-            <span className={styles.closeBtn} onClick={noWayBack}>
+            <button className={styles.closeBtn} onClick={noWayBack}>
               <RiCloseLine style={{ marginBottom: '-3px' }} />
-            </span>
+            </button>
             <div className={styles.modalContent}>
-              <div className='mx-auto w-2/3 h-1/2 justify-center items-center mt-2'>
+              <div className='mx-auto w-1/2 h-1/2 justify-center items-center mt-2'>
                 <input
                   className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none'
                   type='file'
-                  id='excelFile'
+                  id='jsonFile'
                 />
                 <p className='text-gray-500 text-xs italic mt-5'>
                   {addingData ? 'Sabar...' : ''}
                 </p>
                 <p className='text-red-500 text-xs italic mt-5'>
-                  {addingData ? 'Memproses...' : 'Pilih File Excel'}
+                  {addingData ? 'Memproses...' : 'Pilih File JSON'}
                 </p>
                 <input
                   type='checkbox'
@@ -122,4 +118,4 @@ const AddExcel = ({ toggle, setAddExcel }) => {
   );
 };
 
-export default AddExcel;
+export default AddJson;

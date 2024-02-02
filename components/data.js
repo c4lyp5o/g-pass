@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
-import AddModal from './add';
-import EditModal from './edit';
-import DeleteModal from './delete';
+import AddModal from './modals/add';
+import EditModal from './modals/edit';
+import DeleteModal from './modals/delete';
 
-import AddExcel from './excel';
-import AddJson from './json';
+import AddExcel from './modals/excel';
+import AddJson from './modals/json';
 
 import Loading from './loading';
 import { toast } from 'react-toastify';

@@ -2,15 +2,12 @@ import { useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import axios from 'axios';
 
-import { Human, NonHuman } from './inputs';
-import { BusyButton, SubmitButton } from './buttons';
-import styles from '../styles/Modal.module.css';
+import { toast } from 'react-toastify';
+import { Human, NonHuman } from './form-input/inputs';
+import { BusyButton, SubmitButton } from '../buttons';
+import styles from '../../styles/Modal.module.css';
 
 const Modal = ({ toggle, setOpenAddModal, mutate }) => {
-  const [nama, setNama] = useState('');
-  const [mdcNumber, setMdcNumber] = useState('');
-  const [mdtbNumber, setMdtbNumber] = useState('');
-
   const [slate, setSlate] = useState({});
   const [addingData, setAddingData] = useState(false);
 
@@ -19,30 +16,53 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
     setAddingData(true);
     let Data = {};
     Data = {
-      nama: slate.nama.toLowerCase(),
+      type: toggle,
+      nama: slate.nama,
     };
     if (toggle === 'pegawai') {
+      if (slate.mdcNumber.match(/[^0-9]/)) {
+        toast.error('MDC Number hanya boleh mengandungi nombor');
+        setAddingData(false);
+        return;
+      }
       Data = {
         ...Data,
-        mdcNumber: slate.mdcNumber.toLowerCase(),
+        mdcNumber: slate.mdcNumber,
         statusPegawai: 'pp',
       };
     }
     if (toggle === 'juruterapi') {
+      if (!slate.mdtbNumber.match(/^(MDTB|mdtb)/)) {
+        toast.error('MDTB Number mesti diawali dengan MDTB');
+        setAddingData(false);
+        return;
+      }
+      if (slate.mdtbNumber.match(/^(mdtb)/)) {
+        slate.mdtbNumber = slate.mdtbNumber.toUpperCase();
+      }
       Data = {
         ...Data,
-        mdtbNumber: slate.mdtbNumber.toLowerCase(),
+        mdtbNumber: slate.mdtbNumber,
         statusPegawai: 'jp',
       };
     }
     if (toggle === 'fasiliti') {
       Data = {
         ...Data,
-        daerah: slate.daerah.toLowerCase(),
-        negeri: slate.negeri.toLowerCase(),
-        kodFasiliti: slate.kodFasiliti.toLowerCase(),
-        kodFasilitiGiret: slate.kodFasilitiGiret.toLowerCase(),
-        statusPegawai: 'fs',
+        daerah: slate.daerah,
+        negeri: slate.negeri,
+        kodFasiliti: slate.kodFasiliti,
+        kodFasilitiGiret: slate.kodFasilitiGiret,
+      };
+    }
+    if (toggle === 'kkiakd') {
+      Data = {
+        ...Data,
+        namaHospital: slate.namaHospital,
+        daerah: slate.daerah,
+        negeri: slate.negeri,
+        kodFasiliti: slate.kodFasiliti,
+        jenisFasiliti: slate.jenisFasiliti,
       };
     }
     console.log(Data);
@@ -51,8 +71,10 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
         query: 'create',
         payload: Data,
       });
+      toast.success('Data berjaya ditambah');
       console.log(res);
     } catch (err) {
+      toast.error('Data gagal ditambah');
       console.log(err);
     }
     setAddingData(false);
@@ -73,7 +95,7 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
         <div className={styles.centered}>
           <div className={styles.modalAdd}>
             <div className={styles.modalHeader}>
-              <h5 className={styles.heading}>TAMBAH {toggle}</h5>
+              <h5 className={styles.heading}>Tambah {toggle}</h5>
             </div>
             <span
               className={styles.closeBtn}
@@ -82,7 +104,7 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
               <RiCloseLine style={{ marginBottom: '-3px' }} />
             </span>
             <div className={styles.modalContent}>
-              {toggle !== 'fs' ? (
+              {toggle !== 'fasiliti' && toggle !== 'kkiakd' ? (
                 <Human {...InputProps} />
               ) : (
                 <NonHuman {...InputProps} />
@@ -90,7 +112,7 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
             </div>
             <div className={styles.modalActions}>
               <div className={styles.actionsContainer}>
-                {addingData ? <BusyButton /> : <SubmitButton />}
+                {addingData ? <BusyButton /> : <SubmitButton func='add' />}
                 <span
                   className={styles.cancelBtn}
                   onClick={() => setOpenAddModal(false)}
