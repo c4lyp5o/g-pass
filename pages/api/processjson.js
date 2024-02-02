@@ -1,6 +1,9 @@
+import { getServerSession } from 'next-auth';
 import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import fs from 'fs';
+
+import { authOptions } from './auth/[...nextauth]';
 import { createBackup } from './helper';
 
 const safekeeping = multer.diskStorage({
@@ -15,6 +18,11 @@ const safekeeping = multer.diskStorage({
 const upload = multer({ storage: safekeeping }).single('jsonFile');
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ msg: 'Unauthorized' });
+  }
+
   const prisma = new PrismaClient();
 
   upload(req, res, async (err) => {

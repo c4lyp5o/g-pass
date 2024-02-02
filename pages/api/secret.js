@@ -1,13 +1,15 @@
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
+
+import { authOptions } from './auth/[...nextauth]';
 
 const secretHandler = async (req, res) => {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
+
   if (session) {
-    res.end(
-      `Welcome to the VIP club, ${session.user.name || session.user.email}!`
-    );
+    res.statusCode = 202;
+    res.end(`Welcome to the VIP club ${session.user.email}, eheh`);
   } else {
-    res.statusCode = 403;
+    res.statusCode = 418;
     res.end("Hold on, you're not allowed in here!");
   }
 };

@@ -1,33 +1,28 @@
 # pull the Node.js Docker image
-FROM node:18-alpine
+FROM node:lts-alpine
 
 # update the package index
-RUN apk update
-RUN apk add --no-cache tzdata
+RUN apk update && apk add --no-cache tzdata
 
 # set timezone data
 ENV TZ=Asia/Kuala_Lumpur
 
-# create the directory inside the container
+# create app directory
 WORKDIR /usr/src/app
 
-# copy the package.json files from local machine to the workdir in container
-COPY package*.json ./
-
-# run npm install in our local machine
-RUN npm install
-
-# copy the generated modules and all other files to the container
+# bundle app source
 COPY . .
 
-# generate prisma client for querying
-RUN npx prisma generate
+# manage dependency & build production
+RUN npm run install-prod && \
+    npm run build && \
+    rm -rf node_modules && \
+    npm run prune-prod && \
+    npx prisma generate && \
+    npm cache clean --force
 
-# our app is running on port 3000 within the container, so need to expose it
+# app run on port 3000
 EXPOSE 3000
 
-# create optimized build for production
-RUN npm run build
-
-# the command that starts our app
-CMD npm start
+# run the server
+CMD ["npm", "start"]
