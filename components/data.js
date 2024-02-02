@@ -3,12 +3,12 @@ import useSWR from 'swr';
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 
-import AddModal from './add';
-import EditModal from './edit';
-import DeleteModal from './delete';
+import AddModal from './modals/add';
+import EditModal from './modals/edit';
+import DeleteModal from './modals/delete';
 
-import AddExcel from './excel';
-import AddJson from './json';
+import AddExcel from './modals/excel';
+import AddJson from './modals/json';
 
 import Loading from './loading';
 import { toast } from 'react-toastify';
@@ -29,13 +29,13 @@ export default function Data({ toggle }) {
   const [addExcel, setAddExcel] = useState(false);
   const [addJson, setAddJson] = useState(false);
   const { data, mutate, error } = useSWR(
-    `/api/gpass?type=${toggle}&page=${page}`,
+    `/gpass/api/gpass?type=${toggle}&page=${page}`,
     fetcher
   );
 
   const getJSON = async () => {
     const res = await fetch(
-      `/api/gpass?type=download&from=${toggle}&filetype=json`
+      `/gpass/api/gpass?type=download&from=${toggle}&filetype=json`
     );
     const blob = await res.blob();
     const link = document.createElement('a');
@@ -51,7 +51,7 @@ export default function Data({ toggle }) {
 
   const getXLSX = async () => {
     const res = await fetch(
-      `/api/gpass?type=download&from=${toggle}&filetype=xlsx`
+      `/gpass/api/gpass?type=download&from=${toggle}&filetype=xlsx`
     );
     const blob = await res.blob();
     const link = document.createElement('a');

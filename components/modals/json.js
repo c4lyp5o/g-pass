@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import axios from 'axios';
 
-import { BusyButton, SubmitButton } from './buttons';
-import styles from '../styles/Modal.module.css';
+import { BusyButton, SubmitButton } from '../buttons';
+import styles from '../../styles/Modal.module.css';
 import { toast } from 'react-toastify';
 
 const AddJson = ({ toggle, setAddJson }) => {
@@ -38,7 +38,7 @@ const AddJson = ({ toggle, setAddJson }) => {
     formData.append('toggle', toggle);
     formData.append('addmode', addMode);
     try {
-      const res = await axios.post('/api/processjson', formData, {
+      const res = await axios.post('/gpass/api/processjson', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

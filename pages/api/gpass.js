@@ -1,17 +1,25 @@
+import { getServerSession } from 'next-auth';
 import { PrismaClient } from '@prisma/client';
-import nc from 'next-connect';
+import { createRouter } from 'next-connect';
 import fs from 'fs';
 import path from 'path';
 import XLSX from 'xlsx';
 
+import { authOptions } from './auth/[...nextauth]';
 import { conf } from '../../middleware/conf';
 
-const gpassAPI = nc().use(conf);
+const gpassAPI = createRouter().use(conf);
 
 gpassAPI.get(async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ msg: 'Unauthorized' });
+  }
+
   const prisma = new PrismaClient();
   const { type, page } = req.query;
   let x;
+
   switch (type) {
     case 'pegawai':
       const ppCount = await prisma.pegawai.count();
@@ -326,8 +334,14 @@ gpassAPI.get(async (req, res) => {
 });
 
 gpassAPI.post(async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ msg: 'Unauthorized' });
+  }
+
   const prisma = new PrismaClient();
   const { query, payload } = req.body;
+
   switch (query) {
     case 'create':
       console.log('create');
@@ -386,7 +400,7 @@ gpassAPI.post(async (req, res) => {
           },
         });
       }
-      res.status(200).json({ message: 'done', added: add });
+      res.status(201).json({ message: 'done', added: add });
       break;
     case 'read':
       console.log('read');
@@ -548,4 +562,9 @@ gpassAPI.post(async (req, res) => {
   }
 });
 
-export default gpassAPI;
+export default gpassAPI.handler({
+  onError: (err, req, res) => {
+    console.error(err.stack);
+    res.status(err.statusCode || 500).end(err.message);
+  },
+});
