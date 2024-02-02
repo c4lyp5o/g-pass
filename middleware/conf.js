@@ -1,6 +1,5 @@
 import { createRouter } from 'next-connect';
 import log4js from 'log4js';
-import crypt from 'simple-crypto-js';
 
 log4js.configure({
   appenders: {
@@ -52,14 +51,5 @@ const conf = createRouter()
       next();
     }
   });
-//   .post((req, res, next) => {
-//     const { apikey } = req.header;
-//     if (crypter.decrypt(apikey) === process.env.API_KEY) {
-//       next();
-//     } else {
-//       logger.error('Invalid API key from ' + req.headers['x-forwarded-for']);
-//       res.status(401).json({ message: 'Unauthorized' });
-//     }
-//   });
 
 export { conf, logger };

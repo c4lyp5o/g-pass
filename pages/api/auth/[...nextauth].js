@@ -6,13 +6,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const authHandler = async (req, res) => {
-  return await NextAuth(req, res, options);
-};
-
-export default authHandler;
-
-const options = {
+export const authOptions = {
   providers: [
     // REAL mailer
     EmailProvider({
@@ -41,3 +35,7 @@ const options = {
     secret: process.env.JWT_SECRET,
   },
 };
+
+export default async function authHandler(req, res) {
+  return await NextAuth(req, res, authOptions);
+}

@@ -1,17 +1,26 @@
+import { getServerSession } from 'next-auth';
 import { PrismaClient } from '@prisma/client';
 import { createRouter } from 'next-connect';
 import fs from 'fs';
 import path from 'path';
 import XLSX from 'xlsx';
 
+import { authOptions } from './auth/[...nextauth]';
 import { conf } from '../../middleware/conf';
 
 const gpassAPI = createRouter().use(conf);
 
 gpassAPI.get(async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    res.status(401).json({ msg: 'Unauthorized' });
+    return;
+  }
+
   const prisma = new PrismaClient();
   const { type, page } = req.query;
   let x;
+
   switch (type) {
     case 'pegawai':
       const ppCount = await prisma.pegawai.count();
