@@ -40,7 +40,7 @@ const Modal = ({ toggle, setOpenEditModal, entity, mutate }) => {
       bil: entity.bil,
     };
     if (toggle === 'pegawai') {
-      if (slate.mdcNumber.match(/[^0-9]/)) {
+      if (slate.mdcNumber.toString().match(/[^0-9]/)) {
         toast.error('MDC Number hanya boleh mengandungi nombor');
         setEditingData(false);
         return;
