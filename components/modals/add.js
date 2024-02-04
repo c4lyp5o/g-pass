@@ -20,7 +20,7 @@ const Modal = ({ toggle, setOpenAddModal, mutate }) => {
       nama: slate.nama,
     };
     if (toggle === 'pegawai') {
-      if (slate.mdcNumber.match(/[^0-9]/)) {
+      if (slate.mdcNumber.toString().match(/[^0-9]/)) {
         toast.error('MDC Number hanya boleh mengandungi nombor');
         setAddingData(false);
         return;
