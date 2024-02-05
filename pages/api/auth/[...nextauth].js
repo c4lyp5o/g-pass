@@ -11,7 +11,7 @@ export const authOptions = {
     // REAL mailer
     EmailProvider({
       server: process.env.SMTP_HOST,
-      from: process.env.EMAIL_FROM,
+      from: process.env.SMTP_FROM,
     }),
     // OG mailer
     // EmailProvider({
