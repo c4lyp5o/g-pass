@@ -87,7 +87,7 @@ gpassAPI.get(async (req, res) => {
               bil: parseInt(id),
             },
           });
-          res.status(200).json(data1Pegawai);
+          return res.status(200).json(data1Pegawai);
           break;
         case 'juruterapi':
           const data1Juruterapi = await prisma.juruterapi.findUnique({
@@ -95,7 +95,7 @@ gpassAPI.get(async (req, res) => {
               bil: parseInt(id),
             },
           });
-          res.status(200).json(data1Juruterapi);
+          return res.status(200).json(data1Juruterapi);
           break;
         case 'fasiliti':
           const data1Fasiliti = await prisma.fasiliti.findUnique({
@@ -103,7 +103,7 @@ gpassAPI.get(async (req, res) => {
               bil: parseInt(id),
             },
           });
-          res.status(200).json(data1Fasiliti);
+          return res.status(200).json(data1Fasiliti);
           break;
         case 'kkiakd':
           const data1KKIAKD = await prisma.kkiakd.findUnique({
@@ -114,7 +114,7 @@ gpassAPI.get(async (req, res) => {
           res.status(200).json(data1KKIAKD);
           break;
         default:
-          res.status(404).json({ message: 'Not Found' });
+          return res.status(404).json({ message: 'Not Found' });
           break;
       }
       break;

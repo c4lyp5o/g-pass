@@ -13,11 +13,7 @@ import AddJson from './modals/json';
 import Loading from './loading';
 import { toast } from 'react-toastify';
 
-async function fetcher(url) {
-  const res = await fetch(url);
-  const json = await res.json();
-  return json;
-}
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Data({ toggle }) {
   const [page, setPage] = useState(1);

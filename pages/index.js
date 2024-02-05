@@ -36,6 +36,7 @@ export default function Page() {
   const navigation = [
     {
       name: 'DASHBOARD',
+      internalName: 'dashboard',
       icon: HomeIcon,
       current: true,
       onClickAction: () => {
@@ -45,6 +46,7 @@ export default function Page() {
     },
     {
       name: 'PEGAWAI PERGIGIAN',
+      internalName: 'pegawai',
       icon: UsersIcon,
       current: false,
       onClickAction: () => {
@@ -54,6 +56,7 @@ export default function Page() {
     },
     {
       name: 'JURUTERAPI PERGIGIAN',
+      internalName: 'juruterapi',
       icon: FolderIcon,
       current: false,
       onClickAction: () => {
@@ -63,6 +66,7 @@ export default function Page() {
     },
     {
       name: 'KLINIK PERGIGIAN',
+      internalName: 'fasiliti',
       icon: CalendarIcon,
       current: false,
       onClickAction: () => {
@@ -72,6 +76,7 @@ export default function Page() {
     },
     {
       name: 'KKIA / KD',
+      internalName: 'kkiakd',
       icon: DocumentDuplicateIcon,
       current: false,
       onClickAction: () => {
@@ -172,7 +177,7 @@ export default function Page() {
                                   <a
                                     onClick={item.onClickAction}
                                     className={classNames(
-                                      item.current
+                                      toggle === item.internalName
                                         ? 'bg-gray-800 text-white'
                                         : 'text-gray-400 hover:text-white hover:bg-gray-800',
                                       'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -221,7 +226,7 @@ export default function Page() {
                             href={item.href}
                             onClick={item.onClickAction}
                             className={classNames(
-                              item.current
+                              toggle === item.internalName
                                 ? 'bg-gray-800 text-white'
                                 : 'text-gray-400 hover:text-white hover:bg-gray-800',
                               'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -297,7 +302,7 @@ export default function Page() {
                           className='ml-4 text-sm font-semibold leading-6 text-gray-900'
                           aria-hidden='true'
                         >
-                          {session?.user.name || 'Calypso'}
+                          {'Calypso' || session?.user.name}
                         </span>
                         <ChevronDownIcon
                           className='ml-2 h-5 w-5 text-gray-400'
@@ -348,45 +353,45 @@ export default function Page() {
     );
   }
 
-  if (status === 'authenticated') {
-    return (
-      <div className='mx-auto w-1/2 h-1/2 flex flex-col justify-center items-center mt-2'>
-        <div className='grid grid-cols-4 gap-2'>
-          <button
-            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all
-            ${toggle === 'pegawai' ? 'bg-yellow-300 hover:bg-yellow-200' : ''}
-          `}
-            onClick={() => setToggle('pegawai')}
-          >
-            PEGAWAI PERGIGIAN
-          </button>
-          <button
-            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
-              toggle === 'juruterapi' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
-            }`}
-            onClick={() => setToggle('juruterapi')}
-          >
-            JURUTERAPI PERGIGIAN
-          </button>
-          <button
-            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
-              toggle === 'fasiliti' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
-            }`}
-            onClick={() => setToggle('fasiliti')}
-          >
-            KLINIK PERGIGIAN
-          </button>
-          <button
-            className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
-              toggle === 'kkiakd' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
-            }`}
-            onClick={() => setToggle('kkiakd')}
-          >
-            KKIA / KD
-          </button>
-        </div>
-        {toggle ? <Data key={toggle} toggle={toggle} /> : null}
-      </div>
-    );
-  }
+  // if (status === 'unauthenticated') {
+  //   return (
+  //     <div className='mx-auto w-1/2 h-1/2 flex flex-col justify-center items-center mt-2'>
+  //       <div className='grid grid-cols-4 gap-2'>
+  //         <button
+  //           className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all
+  //           ${toggle === 'pegawai' ? 'bg-yellow-300 hover:bg-yellow-200' : ''}
+  //         `}
+  //           onClick={() => setToggle('pegawai')}
+  //         >
+  //           PEGAWAI PERGIGIAN
+  //         </button>
+  //         <button
+  //           className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
+  //             toggle === 'juruterapi' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
+  //           }`}
+  //           onClick={() => setToggle('juruterapi')}
+  //         >
+  //           JURUTERAPI PERGIGIAN
+  //         </button>
+  //         <button
+  //           className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
+  //             toggle === 'fasiliti' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
+  //           }`}
+  //           onClick={() => setToggle('fasiliti')}
+  //         >
+  //           KLINIK PERGIGIAN
+  //         </button>
+  //         <button
+  //           className={`capitalize bg-green-400 rounded-md shadow-xl p-2 hover:bg-green-600 transition-all ${
+  //             toggle === 'kkiakd' ? 'bg-yellow-300 hover:bg-yellow-200' : ''
+  //           }`}
+  //           onClick={() => setToggle('kkiakd')}
+  //         >
+  //           KKIA / KD
+  //         </button>
+  //       </div>
+  //       {toggle ? <Data key={toggle} toggle={toggle} /> : null}
+  //     </div>
+  //   );
+  // }
 }
