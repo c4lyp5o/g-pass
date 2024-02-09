@@ -59,13 +59,14 @@ export default function Data({ toggle }) {
         console.log(err);
       },
       onSuccess: (data) => {
-        if (data) {
+        if (data.totalItems > 0) {
           setUsingSearching(true);
           setSearchIsRunning(false);
+          toast.success(`Terdapat ${data.totalItems} hasil carian`);
         } else {
-          toast.info('No result found...');
           setUsingSearching(false);
           setSearchIsRunning(false);
+          toast.error('Tiada hasil carian');
         }
       },
     }
@@ -135,10 +136,11 @@ export default function Data({ toggle }) {
   useEffect(() => {
     let timer;
 
+    setPage(1);
+
     if (philter === '') {
       setUsingSearching(false);
       setSearchIsRunning(false);
-      setPage(1);
     } else {
       setSearchIsRunning(true);
       timer = setTimeout(() => {
