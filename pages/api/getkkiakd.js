@@ -1,25 +1,27 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const { prisma } = require('../../database/prismaClient');
 
 export default async function handler(req, res) {
-  const { negeri } = req.query;
+  try {
+    const { negeri } = req.query;
 
-  if (!negeri) {
-    return res.status(404).json([]);
-  }
+    if (!negeri) {
+      return res.status(404).json([]);
+    }
 
-  const results = await prisma.kkiakd.findMany({
-    where: {
-      negeri: {
-        contains: negeri,
+    const results = await prisma.kkiakd.findMany({
+      where: {
+        negeri: {
+          contains: negeri,
+        },
       },
-    },
-  });
+    });
 
-  if (!results) {
-    return res.status(404).json([]);
+    if (!results) {
+      return res.status(404).json([]);
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  res.status(200).json(results);
 }
