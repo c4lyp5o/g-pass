@@ -1,13 +1,12 @@
 import { Fragment, useRef, useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { Dialog, Transition } from '@headlessui/react';
-
+import { CheckIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
-import Loading from '../loading';
-
-import { toast } from 'react-toastify';
 import { Human, NonHuman } from './form-input/inputs';
+import Loading from '../loading';
 import { BusyButton, SubmitButton } from '../buttons';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -94,14 +93,13 @@ const EditModal = ({
     }
 
     try {
-      await axios.post('/api/gpass', {
-        query: 'update',
+      await axios.patch('/gpass/api/gpass', {
         payload: Data,
       });
-      toast.success('Data berjaya dikemaskini');
+      toast.success('Maklumat berjaya dikemaskini');
       mutate();
     } catch (err) {
-      toast.error('Data gagal dikemaskini');
+      toast.error('Maklumat gagal dikemaskini');
       console.log(err);
     } finally {
       setEditingData(false);
@@ -116,6 +114,7 @@ const EditModal = ({
   };
 
   if (!data) return <Loading />;
+
   if (error) return <div>failed to load</div>;
 
   return (
@@ -152,21 +151,38 @@ const EditModal = ({
               <Dialog.Panel className='relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6'>
                 <form onSubmit={handleSubmit}>
                   <div>
-                    {toggle !== 'fasiliti' && toggle !== 'kkiakd' ? (
-                      <Human {...InputProps} />
-                    ) : (
-                      <NonHuman {...InputProps} />
-                    )}
+                    <div className='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100'>
+                      <CheckIcon
+                        className='h-6 w-6 text-green-600'
+                        aria-hidden='true'
+                      />
+                    </div>
+                    <div className='mt-3 text-center sm:mt-5'>
+                      <Dialog.Title
+                        as='h3'
+                        className='text-base font-semibold leading-6 text-gray-900 capitalize'
+                      >
+                        Kemaskini {toggle === 'kkiakd' ? 'KKIA / KD' : toggle}{' '}
+                        Baru
+                      </Dialog.Title>
+                      <div className='mt-2'>
+                        {toggle !== 'fasiliti' && toggle !== 'kkiakd' ? (
+                          <Human {...InputProps} />
+                        ) : (
+                          <NonHuman {...InputProps} />
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <div className='mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3'>
                     {editingData ? (
-                      <BusyButton />
+                      <BusyButton func='edit' />
                     ) : (
                       <SubmitButton func='edit' />
                     )}
                     <button
                       type='button'
-                      className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0'
+                      className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
                       onClick={() => setOpenEditModal(false)}
                       ref={cancelButtonRef}
                     >
