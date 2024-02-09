@@ -1,8 +1,8 @@
-export function BusyButton() {
+export function BusyButton({ func }) {
   return (
     <button
       type='button'
-      className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2 cursor-not-allowed'
+      className='inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto'
       disabled
     >
       <svg
@@ -25,7 +25,9 @@ export function BusyButton() {
           d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
         ></path>
       </svg>
-      Menambah Data...
+      {func === 'add' && 'Menambah Maklumat...'}
+      {func === 'edit' && 'Mengemaskini Maklumat...'}
+      {func === 'del' && 'Menghapus Maklumat...'}
     </button>
   );
 }
@@ -34,11 +36,11 @@ export function SubmitButton({ func }) {
   return (
     <button
       type='submit'
-      className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2 capitalize'
+      className='inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto'
     >
-      {func === 'add' && 'Tambah Data'}
-      {func === 'edit' && 'Kemaskini Data'}
-      {func === 'del' && 'Hapus Data'}
+      {func === 'add' && 'Tambah Maklumat'}
+      {func === 'edit' && 'Kemaskini Maklumat'}
+      {func === 'del' && 'Hapus Maklumat'}
     </button>
   );
 }
