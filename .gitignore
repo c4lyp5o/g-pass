@@ -41,9 +41,3 @@ next-env.d.ts
 
 # prisma migrations
 /prisma/migrations
-/prisma/migrations_bak
-
-# local stuff
-/database/*
-/public/uploads/*
-/public/backups/*
