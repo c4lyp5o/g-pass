@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { createRouter } from 'next-connect';
 import fs from 'fs';
 import path from 'path';
-import ExcelJS from 'exceljs';
+import { Workbook } from 'exceljs';
 
 import { authOptions } from './auth/[...nextauth]';
 import { conf } from '../../middleware/conf';
@@ -14,24 +14,7 @@ const findItems = async (req) => {
   try {
     const { type, page } = req.query;
 
-    let model;
-
-    switch (type) {
-      case 'pegawai':
-        model = prisma.pegawai;
-        break;
-      case 'juruterapi':
-        model = prisma.juruterapi;
-        break;
-      case 'fasiliti':
-        model = prisma.fasiliti;
-        break;
-      case 'kkiakd':
-        model = prisma.kkiakd;
-        break;
-      default:
-        break;
-    }
+    const model = prisma[type];
 
     const pageSize = 1000;
     const skip = pageSize * (page - 1);
@@ -212,26 +195,7 @@ const findIndividu = async (req) => {
   try {
     const { from, id } = req.query;
 
-    let model, data;
-
-    switch (from) {
-      case 'pegawai':
-        model = prisma.pegawai;
-        break;
-      case 'juruterapi':
-        model = prisma.juruterapi;
-        break;
-      case 'fasiliti':
-        model = prisma.fasiliti;
-        break;
-      case 'kkiakd':
-        model = prisma.kkiakd;
-        break;
-      default:
-        break;
-    }
-
-    data = await model.findUnique({
+    const data = await prisma[from].findUnique({
       where: {
         bil: parseInt(id),
       },
@@ -264,27 +228,18 @@ const handleDownload = async (req) => {
 };
 
 const sendJson = async (from) => {
-  let data;
+  const data = await prisma[from].findMany();
 
-  switch (from) {
-    case 'pegawai':
-      data = await prisma.pegawai.findMany();
-      break;
-    case 'juruterapi':
-      data = await prisma.juruterapi.findMany();
-      break;
-    case 'fasiliti':
-      data = await prisma.fasiliti.findMany();
-      break;
-    case 'kkiakd':
-      data = await prisma.kkiakd.findMany();
-      break;
-    default:
-      break;
+  let json, jsonfile;
+
+  if (data.length > 0) {
+    json = JSON.stringify(data);
+    jsonfile = path.join(process.cwd(), 'public', `${from}.json`);
+  } else {
+    json = JSON.stringify({ nodata: 'No data' });
+    jsonfile = path.join(process.cwd(), 'public', `${from}.json`);
   }
 
-  const json = JSON.stringify(data);
-  const jsonfile = path.join(process.cwd(), 'public', `${from}.json`);
   fs.writeFileSync(jsonfile, json);
   const file = fs.readFileSync(jsonfile);
   setTimeout(() => {
@@ -294,26 +249,8 @@ const sendJson = async (from) => {
 };
 
 const sendXlsx = async (from) => {
-  let data;
-
-  switch (from) {
-    case 'pegawai':
-      data = await prisma.pegawai.findMany();
-      break;
-    case 'juruterapi':
-      data = await prisma.juruterapi.findMany();
-      break;
-    case 'fasiliti':
-      data = await prisma.fasiliti.findMany();
-      break;
-    case 'kkiakd':
-      data = await prisma.kkiakd.findMany();
-      break;
-    default:
-      break;
-  }
-
-  const workbook = new ExcelJS.Workbook();
+  const data = await prisma[from].findMany();
+  const workbook = new Workbook();
   const worksheet = workbook.addWorksheet(from);
 
   if (data.length > 0) {
@@ -322,6 +259,8 @@ const sendXlsx = async (from) => {
       key,
     }));
     data.forEach((row) => worksheet.addRow(row));
+  } else {
+    worksheet.columns = [{ header: 'No data', key: 'nodata', width: 20 }];
   }
 
   const xlsxfile = path.join(process.cwd(), 'public', `${from}.xlsx`);
@@ -486,7 +425,7 @@ const updateData = async (req) => {
 gpassAPI.get(async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
@@ -541,7 +480,7 @@ gpassAPI.get(async (req, res) => {
 gpassAPI.post(async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
@@ -571,46 +510,19 @@ gpassAPI.patch(async (req, res) => {
 gpassAPI.delete(async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
     const { type, bil } = req.query;
 
-    let deleted;
+    const model = prisma[type];
 
-    switch (type) {
-      case 'pegawai':
-        deleted = await prisma.pegawai.delete({
-          where: {
-            bil: parseInt(bil),
-          },
-        });
-        break;
-      case 'juruterapi':
-        deleted = await prisma.juruterapi.delete({
-          where: {
-            bil: parseInt(bil),
-          },
-        });
-        break;
-      case 'fasiliti':
-        deleted = await prisma.fasiliti.delete({
-          where: {
-            bil: parseInt(bil),
-          },
-        });
-        break;
-      case 'kkiakd':
-        deleted = await prisma.kkiakd.delete({
-          where: {
-            bil: parseInt(bil),
-          },
-        });
-        break;
-      default:
-        return res.status(400).json({ message: 'Bad request' });
-    }
+    const deleted = await model.delete({
+      where: {
+        bil: parseInt(bil),
+      },
+    });
 
     res.status(200).json(deleted);
   } catch (error) {
