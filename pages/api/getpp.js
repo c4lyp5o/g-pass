@@ -1,26 +1,28 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+import { prisma } from '../../database/prismaClient';
 
 export default async function handler(req, res) {
-  const { nama } = req.query;
+  try {
+    const { nama } = req.query;
 
-  if (!nama) {
-    return res.status(404).json([]);
-  }
+    if (!nama) {
+      return res.status(404).json([]);
+    }
 
-  const results = await prisma.pegawai.findMany({
-    where: {
-      nama: {
-        contains: nama,
-        mode: 'insensitive',
+    const results = await prisma.pegawai.findMany({
+      where: {
+        nama: {
+          contains: nama,
+          mode: 'insensitive',
+        },
       },
-    },
-  });
+    });
 
-  if (!results) {
-    return res.status(404).json([]);
+    if (!results) {
+      return res.status(404).json([]);
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  res.status(200).json(results);
 }
