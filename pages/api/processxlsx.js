@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
 import xlsx from 'xlsx';
 import multer from 'multer';
 import fs from 'fs';
+import { prisma } from '../../database/prismaClient';
 
 import { authOptions } from './auth/[...nextauth]';
 import { createBackup } from './helper';
@@ -21,10 +21,8 @@ const upload = multer({ storage: safekeeping }).single('excelFile');
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
-
-  const prisma = new PrismaClient();
 
   upload(req, res, async (err) => {
     console.log('processing xlsx');
@@ -43,10 +41,10 @@ export default async function handler(req, res) {
           const ppXlSheet = punyaPp.SheetNames;
           const ppData = xlsx.utils.sheet_to_json(punyaPp.Sheets[ppXlSheet[0]]);
           if (ppData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!ppData[0].mdcNumber) {
-            return res.status(400).json({ msg: 'mdcNumber is required' });
+            return res.status(400).json({ error: 'mdcNumber is required' });
           }
           if (addmode === 'false') {
             await prisma.pegawai.deleteMany({});
@@ -71,10 +69,10 @@ export default async function handler(req, res) {
           const jpXlSheet = punyaJp.SheetNames;
           const jpData = xlsx.utils.sheet_to_json(punyaJp.Sheets[jpXlSheet[0]]);
           if (jpData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!jpData[0].mdtbNumber) {
-            return res.status(400).json({ msg: 'mdtbNumber is required' });
+            return res.status(400).json({ error: 'mdtbNumber is required' });
           }
           if (addmode === 'false') {
             console.log(`deleting all ${toggle}`);
@@ -100,12 +98,12 @@ export default async function handler(req, res) {
           const fsXlSheet = punyaFs.SheetNames;
           const fsData = xlsx.utils.sheet_to_json(punyaFs.Sheets[fsXlSheet[0]]);
           if (fsData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!fsData[0].kodFasiliti || !fsData[0].kodFasilitiGiret) {
             return res
               .status(400)
-              .json({ msg: 'kodFasiliti and kodFasilitiGiret is required' });
+              .json({ error: 'kodFasiliti and kodFasilitiGiret is required' });
           }
           if (addmode === 'false') {
             await prisma.fasiliti.deleteMany({});
@@ -133,10 +131,10 @@ export default async function handler(req, res) {
           const kkXlSheet = punyaKk.SheetNames;
           const kkData = xlsx.utils.sheet_to_json(punyaKk.Sheets[kkXlSheet[0]]);
           if (kkData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!kkData[0].kodFasiliti) {
-            return res.status(400).json({ msg: 'kodFasiliti is required' });
+            return res.status(400).json({ error: 'kodFasiliti is required' });
           }
           if (addmode === 'false') {
             await prisma.kkiakd.deleteMany({});
