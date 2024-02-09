@@ -30,7 +30,6 @@ log4js.configure({
   },
 });
 
-// const crypter = new crypt(process.env.SALT);
 const logger = log4js.getLogger('server');
 
 const conf = createRouter()
