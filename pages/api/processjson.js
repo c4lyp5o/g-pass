@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import fs from 'fs';
+import { prisma } from '../../database/prismaClient';
 
 import { authOptions } from './auth/[...nextauth]';
 import { createBackup } from './helper';
@@ -20,10 +20,8 @@ const upload = multer({ storage: safekeeping }).single('jsonFile');
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
-
-  const prisma = new PrismaClient();
 
   upload(req, res, async (err) => {
     console.log('processing json');
@@ -42,10 +40,10 @@ export default async function handler(req, res) {
           );
           const ppData = JSON.parse(punyaPp);
           if (ppData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!ppData[0].mdcNumber) {
-            return res.status(400).json({ msg: 'mdcNumber is required' });
+            return res.status(400).json({ error: 'mdcNumber is required' });
           }
           if (addmode === 'false') {
             await prisma.pegawai.deleteMany({});
@@ -70,10 +68,10 @@ export default async function handler(req, res) {
           );
           const jpData = JSON.parse(punyaJp);
           if (jpData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!jpData[0].mdtbNumber) {
-            return res.status(400).json({ msg: 'mdtbNumber is required' });
+            return res.status(400).json({ error: 'mdtbNumber is required' });
           }
           if (addmode === 'false') {
             await prisma.juruterapi.deleteMany({});
@@ -98,11 +96,11 @@ export default async function handler(req, res) {
           );
           const fsData = JSON.parse(punyaFs);
           if (fsData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!fsData[0].kodFasiliti || !fsData[0].kodFasilitiGiret) {
             return res.status(400).json({
-              msg: 'kodFasiliti and kodFasilitiGiret is required',
+              error: 'kodFasiliti and kodFasilitiGiret is required',
             });
           }
           if (addmode === 'false') {
@@ -131,10 +129,10 @@ export default async function handler(req, res) {
           );
           const kkData = JSON.parse(punyaKk);
           if (kkData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
+            return res.status(400).json({ error: 'No data found' });
           }
           if (!kkData[0].kodFasiliti) {
-            return res.status(400).json({ msg: 'kodFasiliti is required' });
+            return res.status(400).json({ error: 'kodFasiliti is required' });
           }
           if (addmode === 'false') {
             await prisma.kkiakd.deleteMany({});
