@@ -1,5 +1,6 @@
 import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 import axios from 'axios';
 
@@ -22,14 +23,11 @@ const DeleteModal = ({
     setDeletingData(true);
 
     try {
-      await axios.post('/gpass/api/gpass', {
-        query: 'delete',
-        payload: { type: toggle, bil: entity.bil },
-      });
-      toast.success('Data berjaya dihapus');
+      await axios.delete(`/gpass/api/gpass?type=${toggle}&bil=${entity.bil}`);
+      toast.success('Maklumat berjaya dihapus');
       mutate();
     } catch (err) {
-      toast.error('Data gagal dihapus');
+      toast.error('Maklumat gagal dihapus');
       console.log(err);
     } finally {
       setDeletingData(false);
@@ -70,24 +68,36 @@ const DeleteModal = ({
             >
               <Dialog.Panel className='relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6'>
                 <form onSubmit={handleSubmit}>
-                  <div>
-                    <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
-                      <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-                        <div className='space-y-6'>
+                  <div className='sm:flex sm:items-start'>
+                    <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10'>
+                      <ExclamationTriangleIcon
+                        className='h-6 w-6 text-red-600'
+                        aria-hidden='true'
+                      />
+                    </div>
+                    <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
+                      <Dialog.Title
+                        as='h3'
+                        className='text-base font-semibold leading-6 text-gray-900'
+                      >
+                        Hapus {entity.nama}
+                      </Dialog.Title>
+                      <div className='mt-2'>
+                        <p className='text-sm text-gray-500'>
                           Anda YAKIN untuk menghapus {entity.nama}?
-                        </div>
+                        </p>
                       </div>
                     </div>
                   </div>
                   <div className='mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3'>
                     {deletingData ? (
-                      <BusyButton />
+                      <BusyButton func='del' />
                     ) : (
                       <SubmitButton func='del' />
                     )}
                     <button
                       type='button'
-                      className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0'
+                      className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
                       onClick={() => setOpenDeleteModal(false)}
                       ref={cancelButtonRef}
                     >
