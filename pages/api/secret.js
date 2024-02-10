@@ -7,7 +7,9 @@ const secretHandler = async (req, res) => {
 
   if (session) {
     res.statusCode = 202;
-    res.end(`Welcome to the VIP club ${session.user.email}, eheh`);
+    res.end(
+      `Welcome to the VIP club ${session.user.email}, eheh. Groovy baby!`
+    );
   } else {
     res.statusCode = 418;
     res.end("Hold on, you're not allowed in here!");

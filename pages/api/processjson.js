@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import fs from 'fs';
+import { prisma } from '../../database/prismaClient';
 
 import { authOptions } from './auth/[...nextauth]';
 import { createBackup } from './helper';
@@ -17,149 +17,87 @@ const safekeeping = multer.diskStorage({
 
 const upload = multer({ storage: safekeeping }).single('jsonFile');
 
+async function insertData(req, res) {
+  const { toggle, addmode } = req.body;
+
+  if (!toggle) {
+    return res.status(400).json({ message: 'Invalid selection' });
+  }
+
+  await createBackup(toggle);
+
+  const fromJSON = fs.readFileSync(
+    `./public/uploads/${req.file.originalname}`,
+    'utf8'
+  );
+
+  const jsonData = JSON.parse(fromJSON);
+
+  if (jsonData.length === 0) {
+    return res.status(400).json({ message: 'No data found' });
+  }
+
+  switch (toggle) {
+    case 'pegawai':
+      if (!jsonData[0].mdcNumber) {
+        return res.status(400).json({ message: 'mdcNumber is required' });
+      }
+      break;
+    case 'juruterapi':
+      if (!jsonData[0].mdtbNumber) {
+        return res.status(400).json({ message: 'mdtbNumber is required' });
+      }
+      break;
+    case 'fasiliti':
+      if (!jsonData[0].kodFasiliti || !jsonData[0].kodFasilitiGiret) {
+        return res.status(400).json({
+          message: 'kodFasiliti and kodFasilitiGiret is required',
+        });
+      }
+      break;
+    case 'kkiakd':
+      if (!jsonData[0].kodFasiliti) {
+        return res.status(400).json({ message: 'kodFasiliti is required' });
+      }
+      break;
+    default:
+      console.log('default');
+      break;
+  }
+
+  if (addmode === 'false') {
+    await prisma[toggle].deleteMany({});
+  }
+
+  try {
+    for (let item of jsonData) {
+      await prisma[toggle].create({
+        data: item,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+
+  setTimeout(() => {
+    fs.unlinkSync(`./public/uploads/${req.file.originalname}`);
+  }, 100);
+
+  return jsonData.length;
+}
+
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  const prisma = new PrismaClient();
-
-  upload(req, res, async (err) => {
+  upload(req, res, async (error) => {
     console.log('processing json');
-    if (err) {
-      res.status(500).json({ error: err });
+    if (error) {
+      res.status(500).json({ message: error });
     } else {
-      const { toggle, addmode } = req.body;
-      let count = 0;
-      switch (toggle) {
-        case 'pegawai':
-          console.log('pegawai');
-          await createBackup(toggle);
-          const punyaPp = fs.readFileSync(
-            `./public/uploads/${req.file.originalname}`,
-            'utf8'
-          );
-          const ppData = JSON.parse(punyaPp);
-          if (ppData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
-          }
-          if (!ppData[0].mdcNumber) {
-            return res.status(400).json({ msg: 'mdcNumber is required' });
-          }
-          if (addmode === 'false') {
-            await prisma.pegawai.deleteMany({});
-          }
-          for (let row of ppData) {
-            count++;
-            await prisma.pegawai.create({
-              data: {
-                nama: row.nama,
-                statusPegawai: row.statusPegawai,
-                mdcNumber: row.mdcNumber,
-              },
-            });
-          }
-          break;
-        case 'juruterapi':
-          console.log('juruterapi json process');
-          await createBackup(toggle);
-          const punyaJp = fs.readFileSync(
-            `./public/uploads/${req.file.originalname}`,
-            'utf8'
-          );
-          const jpData = JSON.parse(punyaJp);
-          if (jpData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
-          }
-          if (!jpData[0].mdtbNumber) {
-            return res.status(400).json({ msg: 'mdtbNumber is required' });
-          }
-          if (addmode === 'false') {
-            await prisma.juruterapi.deleteMany({});
-          }
-          for (let row of jpData) {
-            count++;
-            await prisma.juruterapi.create({
-              data: {
-                nama: row.nama,
-                statusPegawai: row.statusPegawai,
-                mdtbNumber: row.mdtbNumber,
-              },
-            });
-          }
-          break;
-        case 'fasiliti':
-          console.log('fasiliti');
-          await createBackup(toggle);
-          const punyaFs = fs.readFileSync(
-            `./public/uploads/${req.file.originalname}`,
-            'utf8'
-          );
-          const fsData = JSON.parse(punyaFs);
-          if (fsData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
-          }
-          if (!fsData[0].kodFasiliti || !fsData[0].kodFasilitiGiret) {
-            return res.status(400).json({
-              msg: 'kodFasiliti and kodFasilitiGiret is required',
-            });
-          }
-          if (addmode === 'false') {
-            await prisma.fasiliti.deleteMany({});
-          }
-          for (let row of fsData) {
-            count++;
-            await prisma.fasiliti.create({
-              data: {
-                nama: row.nama,
-                statusPegawai: row.statusPegawai,
-                daerah: row.daerah,
-                negeri: row.negeri,
-                kodFasiliti: row.kodFasiliti,
-                kodFasilitiGiret: row.kodFasilitiGiret,
-              },
-            });
-          }
-          break;
-        case 'kkiakd':
-          console.log('kkiakd');
-          await createBackup(toggle);
-          const punyaKk = fs.readFileSync(
-            `./public/uploads/${req.file.originalname}`,
-            'utf8'
-          );
-          const kkData = JSON.parse(punyaKk);
-          if (kkData.length === 0) {
-            return res.status(400).json({ msg: 'No data found' });
-          }
-          if (!kkData[0].kodFasiliti) {
-            return res.status(400).json({ msg: 'kodFasiliti is required' });
-          }
-          if (addmode === 'false') {
-            await prisma.kkiakd.deleteMany({});
-          }
-          for (let row of kkData) {
-            count++;
-            await prisma.kkiakd.create({
-              data: {
-                nama: row.nama,
-                namaHospital: row.namaHospital,
-                daerah: row.daerah,
-                negeri: row.negeri,
-                kodFasiliti: row.kodFasiliti,
-                jenisFasiliti: row.jenisFasiliti,
-              },
-            });
-          }
-          break;
-        default:
-          console.log('default');
-          break;
-      }
-      setTimeout(() => {
-        fs.unlinkSync(`./public/uploads/${req.file.originalname}`);
-      }, 100);
+      const count = await insertData(req, res);
       res.status(200).json({ added: count });
     }
   });

@@ -1,36 +1,40 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const { prisma } = require('../../database/prismaClient');
 
 export default async function handler(req, res) {
-  const { negeri, daerah } = req.query;
+  try {
+    const { negeri, daerah } = req.query;
 
-  if (!negeri && !daerah) {
-    return res.status(404).json([]);
-  }
+    if (!negeri && !daerah) {
+      return res.status(404).json([]);
+    }
 
-  if (!negeri && daerah) {
-    return res.status(404).json([]);
-  }
+    if (!negeri && daerah) {
+      return res.status(404).json([]);
+    }
 
-  if (negeri && !daerah) {
-    return res.status(404).json([]);
-  }
+    if (negeri && !daerah) {
+      return res.status(404).json([]);
+    }
 
-  const results = await prisma.fasiliti.findMany({
-    where: {
-      daerah: {
-        contains: daerah,
+    const results = await prisma.fasiliti.findMany({
+      where: {
+        daerah: {
+          contains: daerah,
+          mode: 'insensitive',
+        },
+        negeri: {
+          contains: negeri,
+          mode: 'insensitive',
+        },
       },
-      negeri: {
-        contains: negeri,
-      },
-    },
-  });
+    });
 
-  if (!results) {
-    return res.status(404).json([]);
+    if (!results) {
+      return res.status(404).json([]);
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  res.status(200).json(results);
 }
